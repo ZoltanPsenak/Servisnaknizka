@@ -4,6 +4,10 @@
 @inject IJSRuntime JSRuntime
 @inject NavigationManager Navigation
 @inject ApplicationDbContext DbContext
+@inject UserManager<User> UserManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@using Microsoft.AspNetCore.Components.Authorization
+@attribute [Authorize]
 
 <PageTitle>Dashboard - Servisná knižka</PageTitle>
 
@@ -544,7 +548,7 @@ else
             {
                 <!-- ADMINISTRÁTOR -->
                 <div class="welcome-section">
-                    <h1>Administrátorský panel 👨‍💼</h1>
+                    <h1>Administrátorský panel</h1>
                     <p>Kompletný prehľad systému a používateľov</p>
                 </div>
 
@@ -1588,44 +1592,54 @@ else
     // Form model
     private ServiceRecord newServiceRecord = new();
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    // ✅ OPRAVENÉ: Použiť OnInitializedAsync namiesto OnAfterRenderAsync
+    protected override async Task OnInitializedAsync()
     {
-        if (firstRender)
-        {
-            await CheckAuthenticationAndLoadData();
-            isInitialized = true;
-            StateHasChanged();
-        }
+        await CheckAuthenticationAndLoadData();
     }
 
     private async Task CheckAuthenticationAndLoadData()
     {
         try
         {
-            var authResult = await JSRuntime.InvokeAsync<string>("sessionStorage.getItem", "isAuthenticated");
-            isAuthenticated = authResult == "true";
+            // ✅ Získať autentifikačný stav z ASP.NET Identity
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
 
-            if (!isAuthenticated)
+            if (user.Identity?.IsAuthenticated != true)
+            {
+                // Používateľ nie je prihlásený - presmerovať na login
+                Navigation.NavigateTo("/login", forceLoad: true);
+                return;
+            }
+
+            // ✅ Získať aktuálneho používateľa z databázy
+            var currentUser = await UserManager.GetUserAsync(user);
+            if (currentUser == null)
             {
                 Navigation.NavigateTo("/login", forceLoad: true);
                 return;
             }
 
-            userEmail = await JSRuntime.InvokeAsync<string>("sessionStorage.getItem", "userEmail") ?? "";
-            userRole = await JSRuntime.InvokeAsync<string>("sessionStorage.getItem", "userRole") ?? "";
+            // Nastaviť používateľské údaje
+            currentUserId = currentUser.Id;
+            userEmail = currentUser.Email ?? "";
+            userRole = currentUser.Role.ToString().ToLower();
+            isAuthenticated = true;
 
-            // Get user from database
-            var user = await DbContext.Users.FirstOrDefaultAsync(u => u.Email == userEmail);
-            if (user != null)
-            {
-                currentUserId = user.Id;
-                await LoadDataFromDatabase();
-            }
+            // Načítať dáta z databázy
+            await LoadDataFromDatabase();
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error: {ex.Message}");
+            Console.WriteLine($"Auth check error: {ex.Message}");
             Navigation.NavigateTo("/login", forceLoad: true);
+            return;
+        }
+        finally
+        {
+            isInitialized = true;
+            StateHasChanged();
         }
     }
 
@@ -1633,67 +1647,92 @@ else
     {
         try
         {
-            if (userRole == "owner")
+            if (userRole == "admin")
             {
+                // Admin vidí všetko
+                allUsers = await DbContext.Users
+                    .Where(u => u.IsActive)
+                    .OrderByDescending(u => u.CreatedAt)
+                    .ToListAsync();
+
+                allVehicles = await DbContext.Vehicles
+                    .Where(v => v.IsActive)
+                    .Include(v => v.Owner)
+                    .Include(v => v.ServiceRecords)
+                    .OrderByDescending(v => v.CreatedAt)
+                    .ToListAsync();
+
+                recentRecords = await DbContext.ServiceRecords
+                    .Include(sr => sr.Vehicle)
+                    .Include(sr => sr.CreatedBy)
+                    .OrderByDescending(sr => sr.ServiceDate)
+                    .Take(10)
+                    .ToListAsync();
+            }
+            else if (userRole == "owner")
+            {
+                // Majiteľ vidí svoje vozidlá
                 vehicles = await DbContext.Vehicles
                     .Where(v => v.OwnerId == currentUserId && v.IsActive)
                     .Include(v => v.ServiceRecords)
+                    .ThenInclude(sr => sr.CreatedBy)
+                    .OrderBy(v => v.Brand)
+                    .ThenBy(v => v.Model)
                     .ToListAsync();
 
                 if (vehicles.Any())
                 {
-                    selectedVehicleId = vehicles.First().Id;
-                    await SelectVehicle(selectedVehicleId);
+                    selectedVehicle = vehicles.First();
+                    selectedVehicleId = selectedVehicle.Id;
+                    serviceRecords = selectedVehicle.ServiceRecords
+                        .OrderByDescending(sr => sr.ServiceDate)
+                        .ToList();
                 }
             }
             else if (userRole == "service")
             {
+                // Servis vidí vozidlá s povolením
                 vehicles = await DbContext.Vehicles
                     .Where(v => v.IsActive && v.ServicePermissions.Any(p => p.ServiceId == currentUserId && p.IsActive))
                     .Include(v => v.Owner)
                     .Include(v => v.ServiceRecords)
-                    .ToListAsync();
-            }
-            else if (userRole == "admin")
-            {
-                allUsers = await DbContext.Users
-                    .Include(u => u.OwnedVehicles)
-                    .Include(u => u.CreatedServiceRecords)
+                    .ThenInclude(sr => sr.CreatedBy)
+                    .OrderBy(v => v.Brand)
+                    .ThenBy(v => v.Model)
                     .ToListAsync();
 
-                allVehicles = await DbContext.Vehicles
-                    .Include(v => v.Owner)
-                    .Include(v => v.ServiceRecords)
-                    .ToListAsync();
-
-                recentRecords = await DbContext.ServiceRecords
-                    .Include(r => r.Vehicle)
-                    .Include(r => r.CreatedBy)
-                    .OrderByDescending(r => r.ServiceDate)
-                    .Take(10)
-                    .ToListAsync();
+                if (vehicles.Any())
+                {
+                    selectedVehicle = vehicles.First();
+                    selectedVehicleId = selectedVehicle.Id;
+                    serviceRecords = selectedVehicle.ServiceRecords
+                        .OrderByDescending(sr => sr.ServiceDate)
+                        .ToList();
+                }
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Database error: {ex.Message}");
+            Console.WriteLine($"Error loading data: {ex.Message}");
         }
     }
 
     private async Task SelectVehicle(int vehicleId)
     {
+        if (vehicles == null) return;
+
+        selectedVehicle = vehicles.FirstOrDefault(v => v.Id == vehicleId);
         selectedVehicleId = vehicleId;
-        selectedVehicle = vehicles?.FirstOrDefault(v => v.Id == vehicleId);
-        
+
         if (selectedVehicle != null)
         {
-            serviceRecords = await DbContext.ServiceRecords
-                .Where(r => r.VehicleId == vehicleId)
-                .Include(r => r.CreatedBy)
-                .ToListAsync();
+            serviceRecords = selectedVehicle.ServiceRecords
+                .OrderByDescending(sr => sr.ServiceDate)
+                .ToList();
         }
-        
-        ClearForm();
+
+        showNewRecordForm = false;
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task SaveServiceRecord()
@@ -1713,13 +1752,13 @@ else
             DbContext.ServiceRecords.Add(newServiceRecord);
             await DbContext.SaveChangesAsync();
 
-            formMessage = "Servisný záznam bol úspešne uložený!";
-            formSuccess = true;
-
-            await Task.Delay(1500);
+            // Refresh data
             await LoadDataFromDatabase();
             await SelectVehicle(selectedVehicleId);
-            
+
+            formMessage = "Servisný záznam bol úspešne uložený!";
+            formSuccess = true;
+            ClearForm();
             showNewRecordForm = false;
         }
         catch (Exception ex)
@@ -1740,81 +1779,72 @@ else
         {
             ServiceDate = DateTime.Today
         };
-        formMessage = string.Empty;
-        formSuccess = false;
-        showNewRecordForm = false;
     }
 
     private async Task ShowAddVehicleModal()
     {
-        await JSRuntime.InvokeVoidAsync("alert", "Funkcia pridania vozidla bude dostupná v nasledujúcej verzii.");
+        await JSRuntime.InvokeVoidAsync("alert", "Funkcia pridania vozidla bude čoskoro k dispozícii!");
     }
 
     private async Task Logout()
     {
-        await JSRuntime.InvokeVoidAsync("sessionStorage.clear");
-        Navigation.NavigateTo("/", forceLoad: true);
+        // ✅ Použiť API logout endpoint
+        Navigation.NavigateTo("/api/auth/logout", forceLoad: true);
     }
 
     // Helper methods
     private string GetUserInitials()
     {
-        var parts = userEmail.Split('@')[0].Split('.');
-        if (parts.Length >= 2)
-            return $"{parts[0][0]}{parts[1][0]}".ToUpper();
-        return userEmail.Substring(0, Math.Min(2, userEmail.Length)).ToUpper();
+        if (string.IsNullOrEmpty(userEmail)) return "?";
+        return userEmail.Substring(0, 1).ToUpper();
     }
 
     private string GetUserName()
     {
-        var parts = userEmail.Split('@')[0].Split('.');
-        if (parts.Length >= 2)
-            return $"{char.ToUpper(parts[0][0])}{parts[0].Substring(1)} {char.ToUpper(parts[1][0])}{parts[1].Substring(1)}";
         return userEmail.Split('@')[0];
     }
 
     private string GetRoleDisplayName() => userRole switch
     {
-        "owner" => "Majiteľ vozidla",
-        "service" => "Autoservis",
         "admin" => "Administrátor",
+        "owner" => "Majiteľ vozidla",
+        "service" => "Servis",
         _ => "Používateľ"
     };
 
     private string GetVehicleServiceStatus(Vehicle vehicle)
     {
-        var lastService = vehicle.ServiceRecords.OrderByDescending(r => r.ServiceDate).FirstOrDefault();
-        if (lastService == null) return "Bez záznamu";
-        
-        var daysSince = (DateTime.Now - lastService.ServiceDate).Days;
-        if (daysSince < 90) return "Aktuálny";
-        if (daysSince < 180) return "Kontrola";
-        return "Servis potrebný";
+        var lastService = vehicle.ServiceRecords.MaxBy(sr => sr.ServiceDate);
+        if (lastService == null) return "Bez servisu";
+
+        var daysSinceService = (DateTime.Now - lastService.ServiceDate).Days;
+        if (daysSinceService > 365) return "Potrebný servis";
+        if (daysSinceService > 180) return "Blíži sa servis";
+        return "V poriadku";
     }
 
     private string GetStatusClass(Vehicle vehicle)
     {
-        var lastService = vehicle.ServiceRecords.OrderByDescending(r => r.ServiceDate).FirstOrDefault();
-        if (lastService == null) return "warning";
-        
-        var daysSince = (DateTime.Now - lastService.ServiceDate).Days;
-        if (daysSince < 90) return "success";
-        if (daysSince < 180) return "warning";
-        return "danger";
+        var status = GetVehicleServiceStatus(vehicle);
+        return status switch
+        {
+            "Potrebný servis" => "danger",
+            "Blíži sa servis" => "warning",
+            _ => "success"
+        };
     }
 
     private int GetRecentServices()
     {
-        if (serviceRecords == null) return 0;
-        var lastMonth = DateTime.Now.AddMonths(-1);
-        return serviceRecords.Count(r => r.ServiceDate >= lastMonth);
+        if (vehicles == null) return 0;
+        return vehicles.Sum(v => v.ServiceRecords.Count(sr => sr.ServiceDate >= DateTime.Now.AddMonths(-1)));
     }
 
     private string GetTotalCost()
     {
-        if (serviceRecords == null) return "0";
-        var total = serviceRecords.Where(r => r.Cost.HasValue).Sum(r => r.Cost.Value);
-        return total.ToString("N0");
+        if (vehicles == null) return "0 €";
+        var total = vehicles.Sum(v => v.ServiceRecords.Sum(sr => sr.Cost ?? 0));
+        return $"{total:N0} €";
     }
 
     private int GetUniqueCustomers()
@@ -1830,22 +1860,24 @@ else
 
     private string GetInitials(string firstName, string lastName)
     {
-        return $"{firstName[0]}{lastName[0]}".ToUpper();
+        var f = string.IsNullOrEmpty(firstName) ? "" : firstName.Substring(0, 1);
+        var l = string.IsNullOrEmpty(lastName) ? "" : lastName.Substring(0, 1);
+        return $"{f}{l}".ToUpper();
     }
 
     private string GetRoleName(UserRole role) => role switch
     {
+        UserRole.Admin => "Admin",
         UserRole.Owner => "Majiteľ",
         UserRole.Service => "Servis",
-        UserRole.Admin => "Admin",
-        _ => "Neznámy"
+        _ => "Neznáma"
     };
 
     private string GetRoleBadgeClass(UserRole role) => role switch
     {
+        UserRole.Admin => "admin",
         UserRole.Owner => "owner",
         UserRole.Service => "service",
-        UserRole.Admin => "admin",
         _ => ""
     };
 }

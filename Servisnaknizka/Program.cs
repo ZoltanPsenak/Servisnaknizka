@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using System.Threading.RateLimiting;
 using Servisnaknizka.Components;
 using Servisnaknizka.Data;
 using Servisnaknizka.Models;
@@ -8,7 +9,7 @@ using Servisnaknizka.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Pridanie DbContext s SQL Server - pripojenie z konfigur·cie
+// Pridanie DbContext s SQL Server - pripojenie z konfigur√°cie
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -28,7 +29,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     }
 });
 
-// Konfigur·cia ASP.NET Identity
+// Konfigur√°cia ASP.NET Identity
 builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
 {
     // Nastavenia hesla
@@ -38,18 +39,18 @@ builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
     options.Password.RequireLowercase = true;
     options.Password.RequireNonAlphanumeric = false;
 
-    // Nastavenia pouûÌvateæa
+    // Nastavenia pou≈æ√≠vateƒæa
     options.User.RequireUniqueEmail = true;
     options.SignIn.RequireConfirmedEmail = false;
 
-    // Nastavenia uzamknutia ˙Ëtu
+    // Nastavenia uzamknutia √∫ƒçtu
     options.Lockout.MaxFailedAccessAttempts = 5;
     options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
 })
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
-// Konfigur·cia cookies pre autentifik·ciu
+// Konfigur√°cia cookies pre autentifik√°ciu
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/login";
@@ -58,18 +59,20 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.ExpireTimeSpan = TimeSpan.FromDays(7);
     options.SlidingExpiration = true;
     options.Cookie.HttpOnly = true;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+    options.Cookie.SecurePolicy = builder.Environment.IsDevelopment() 
+        ? CookieSecurePolicy.SameAsRequest 
+        : CookieSecurePolicy.Always;
     options.Cookie.SameSite = SameSiteMode.Strict;
 });
 
-// Registr·cia sluûieb
+// Registr√°cia slu≈æieb
 builder.Services.AddScoped<IVehicleService, VehicleService>();
 
 // Pridanie Razor Components
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-// Pridanie autoriz·cie
+// Pridanie autoriz√°cie
 builder.Services.AddAuthorization(options =>
 {
     // Politiky pre roly
@@ -90,9 +93,33 @@ builder.Services.AddAuthorization(options =>
                   context.User.HasClaim(ClaimTypes.Role, "Admin")));
 });
 
+// ‚úÖ Rate Limiting - Opraven√° syntax pre .NET 8
+builder.Services.AddRateLimiter(options =>
+{
+    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: httpContext.Request.Path.ToString(),
+            factory: partition => new FixedWindowRateLimiterOptions
+            {
+                AutoReplenishment = true,
+                PermitLimit = 10,
+                QueueLimit = 0,
+                Window = TimeSpan.FromMinutes(1)
+            }));
+});
+
+// ‚úÖ User Secrets pre Development
+if (builder.Environment.IsDevelopment())
+{
+    builder.Configuration.AddUserSecrets<Program>();
+}
+
+// ‚úÖ Pridajte Controllers
+builder.Services.AddControllers();
+
 var app = builder.Build();
 
-// Aplikovanie migr·ciÌ a seed d·t pri spustenÌ
+// Aplikovanie migr√°ci√≠ a seed d√°t pri spusten√≠
 using (var scope = app.Services.CreateScope())
 {
     try
@@ -100,16 +127,16 @@ using (var scope = app.Services.CreateScope())
         var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
         
-        // Aplikovanie migr·ciÌ
+        // Aplikovanie migr√°ci√≠
         await context.Database.MigrateAsync();
         
-        // Seed d·t
+        // Seed d√°t
         await SeedDataAsync(userManager, context);
     }
     catch (Exception ex)
     {
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "Chyba pri inicializ·cii datab·zy");
+        logger.LogError(ex, "Chyba pri inicializ√°cii datab√°zy");
     }
 }
 
@@ -123,11 +150,16 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-// Autentifik·cia a autoriz·cia
+// ‚úÖ Rate Limiter middleware
+app.UseRateLimiter();
+
+// Autentifik√°cia a autoriz√°cia
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseAntiforgery();
+
+app.MapControllers();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
@@ -135,19 +167,40 @@ app.MapRazorComponents<App>()
 app.Run();
 
 /// <summary>
-/// Inicializuje testovÈ d·ta do SQL Server datab·zy
+/// Inicializuje testovacie d√°ta do SQL Server datab√°zy
 /// </summary>
 async Task SeedDataAsync(UserManager<User> userManager, ApplicationDbContext context)
 {
-    // Vytvorenie admin ˙Ëtu ak neexistuje
-    if (await userManager.FindByEmailAsync("admin@servis.sk") == null)
+    // ‚úÖ KROK 1: Vytvorenie Identity Roles ak neexistuj√∫
+    string[] roleNames = { "Admin", "Owner", "Service" };
+    
+    foreach (var roleName in roleNames)
+    {
+        var roleExists = await context.Roles.AnyAsync(r => r.Name == roleName);
+        if (!roleExists)
+        {
+            var role = new IdentityRole<int>
+            {
+                Name = roleName,
+                NormalizedName = roleName.ToUpper()
+            };
+            context.Roles.Add(role);
+        }
+    }
+    await context.SaveChangesAsync();
+
+    // ‚úÖ KROK 2: Vytvorenie admin √∫ƒçtu
+    var adminEmail = "admin@servis.sk";
+    var adminUser = await userManager.FindByEmailAsync(adminEmail);
+    
+    if (adminUser == null)
     {
         var admin = new User
         {
             FirstName = "Admin",
-            LastName = "SystÈmu",
-            UserName = "admin@servis.sk",
-            Email = "admin@servis.sk",
+            LastName = "Syst√©mu",
+            UserName = adminEmail,
+            Email = adminEmail,
             Role = UserRole.Admin,
             EmailConfirmed = true
         };
@@ -155,19 +208,35 @@ async Task SeedDataAsync(UserManager<User> userManager, ApplicationDbContext con
         var result = await userManager.CreateAsync(admin, "Admin123!");
         if (result.Succeeded)
         {
+            // Prid√°me do Identity Role
+            await userManager.AddToRoleAsync(admin, "Admin");
+            // A aj do Claims
             await userManager.AddClaimAsync(admin, new Claim(ClaimTypes.Role, "Admin"));
         }
     }
+    else
+    {
+        // Ak u≈æ existuje, uist√≠me sa ≈æe m√° rolu
+        var isInRole = await userManager.IsInRoleAsync(adminUser, "Admin");
+        if (!isInRole)
+        {
+            await userManager.AddToRoleAsync(adminUser, "Admin");
+            await userManager.AddClaimAsync(adminUser, new Claim(ClaimTypes.Role, "Admin"));
+        }
+    }
 
-    // Vytvorenie majiteæa ak neexistuje
-    if (await userManager.FindByEmailAsync("majitel@vozidlo.sk") == null)
+    // ‚úÖ KROK 3: Vytvorenie majiteƒæa
+    var ownerEmail = "majitel@vozidlo.sk";
+    var ownerUser = await userManager.FindByEmailAsync(ownerEmail);
+    
+    if (ownerUser == null)
     {
         var owner = new User
         {
-            FirstName = "J·n",
-            LastName = "Nov·k",
-            UserName = "majitel@vozidlo.sk",
-            Email = "majitel@vozidlo.sk",
+            FirstName = "J√°n",
+            LastName = "Nov√°k",
+            UserName = ownerEmail,
+            Email = ownerEmail,
             Role = UserRole.Owner,
             EmailConfirmed = true
         };
@@ -175,9 +244,10 @@ async Task SeedDataAsync(UserManager<User> userManager, ApplicationDbContext con
         var result = await userManager.CreateAsync(owner, "Owner123!");
         if (result.Succeeded)
         {
+            await userManager.AddToRoleAsync(owner, "Owner");
             await userManager.AddClaimAsync(owner, new Claim(ClaimTypes.Role, "Owner"));
             
-            // Vytvorenie vzorovÈho vozidla
+            // Vytvorenie vzorov√©ho vozidla
             var vehicle = new Vehicle
             {
                 VIN = "WVWZZZ1JZ3W386752",
@@ -185,7 +255,7 @@ async Task SeedDataAsync(UserManager<User> userManager, ApplicationDbContext con
                 Model = "Golf",
                 Year = 2019,
                 LicensePlate = "BA123AB",
-                Color = "Modr·",
+                Color = "Modr√°",
                 EngineType = "1.5 TSI",
                 EnginePower = 110,
                 OwnerId = owner.Id
@@ -195,16 +265,28 @@ async Task SeedDataAsync(UserManager<User> userManager, ApplicationDbContext con
             await context.SaveChangesAsync();
         }
     }
+    else
+    {
+        var isInRole = await userManager.IsInRoleAsync(ownerUser, "Owner");
+        if (!isInRole)
+        {
+            await userManager.AddToRoleAsync(ownerUser, "Owner");
+            await userManager.AddClaimAsync(ownerUser, new Claim(ClaimTypes.Role, "Owner"));
+        }
+    }
 
-    // Vytvorenie servisu ak neexistuje
-    if (await userManager.FindByEmailAsync("servis@autoservis.sk") == null)
+    // ‚úÖ KROK 4: Vytvorenie servisu
+    var serviceEmail = "servis@autoservis.sk";
+    var serviceUser = await userManager.FindByEmailAsync(serviceEmail);
+    
+    if (serviceUser == null)
     {
         var service = new User
         {
             FirstName = "AutoServis",
             LastName = "Bratislava",
-            UserName = "servis@autoservis.sk",
-            Email = "servis@autoservis.sk",
+            UserName = serviceEmail,
+            Email = serviceEmail,
             Role = UserRole.Service,
             EmailConfirmed = true
         };
@@ -212,7 +294,17 @@ async Task SeedDataAsync(UserManager<User> userManager, ApplicationDbContext con
         var result = await userManager.CreateAsync(service, "Service123!");
         if (result.Succeeded)
         {
+            await userManager.AddToRoleAsync(service, "Service");
             await userManager.AddClaimAsync(service, new Claim(ClaimTypes.Role, "Service"));
+        }
+    }
+    else
+    {
+        var isInRole = await userManager.IsInRoleAsync(serviceUser, "Service");
+        if (!isInRole)
+        {
+            await userManager.AddToRoleAsync(serviceUser, "Service");
+            await userManager.AddClaimAsync(serviceUser, new Claim(ClaimTypes.Role, "Service"));
         }
     }
 }
