@@ -4,181 +4,316 @@
 <PageTitle>Domov - Servisná knižka</PageTitle>
 
 <div class="landing-page">
-    <!-- HERO SECTION -->
-    <div class="hero-section">
-        <nav class="nav-bar">
-            <div class="nav-container">
-                <div class="logo">
-                    <span class="logo-text">Servisná Knižka</span>
-                </div>
-                <div class="nav-links">
-                    <a href="/login" class="nav-btn">Prihlásiť sa</a>
-                </div>
+    <!-- NAVIGATION -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <span class="brand-text">Servisná Knižka</span>
             </div>
-        </nav>
+            <div class="nav-menu">
+                <a href="#features" class="nav-item">Funkcie</a>
+                <a href="#about" class="nav-item">Aplikácia</a>
+                <a href="/login" class="btn-login">Prihlásenie</a>
+            </div>
+        </div>
+    </nav>
 
-        <div class="hero-content">
-            <h1 class="hero-title">Elektronická<br/>servisná knižka</h1>
-            <p class="hero-subtitle">
-                Kompletná evidencia servisných úkonov a údržby vášho vozidla.<br/>
-                Prehľadná história, bezpečné uloženie a prístup kedykoľvek.
-            </p>
-            <div class="hero-buttons">
-                <a href="/login" class="btn-primary">
-                    <span>Začať teraz</span>
-                    <span class="btn-arrow">→</span>
-                </a>
-                <a href="#features" class="btn-secondary">
-                    <span>Zistiť viac</span>
-                </a>
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <div class="hero-bg">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+        </div>
+        <div class="container hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    Vaša digitálna<br/>
+                    <span class="gradient-text">servisná knižka</span>
+                </h1>
+                <p class="hero-description">
+                    Kompletná evidencia údržby vozidla na jednom mieste. 
+                    Prehľadná história, automatické pripomienky a prístup kedykoľvek, odkiaľkoľvek.
+                </p>
+                <div class="hero-buttons">
+                    <a href="/login" class="btn btn-primary">
+                        <span>Začať používať</span>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                    <a href="#features" class="btn btn-outline">
+                        <span>Zistiť viac</span>
+                    </a>
+                </div>
+                
+                <!-- Stats -->
+                <div class="hero-stats">
+                    <div class="stat">
+                        <div class="stat-number">150+</div>
+                        <div class="stat-label">Aktívnych používateľov</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">800+</div>
+                        <div class="stat-label">Servisných záznamov</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">99.9%</div>
+                        <div class="stat-label">Dostupnosť</div>
+                    </div>
+                </div>
             </div>
             
-            <!-- Stats -->
-            <div class="hero-stats">
-                <div class="stat-item">
-                    <div class="stat-number">1000+</div>
-                    <div class="stat-label">Spokojných užívateľov</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number">5000+</div>
-                    <div class="stat-label">Servisných záznamov</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number">100%</div>
-                    <div class="stat-label">Bezpečnosť dát</div>
+            <div class="hero-visual">
+                <div class="mockup-card">
+                    <div class="mockup-header">
+                        <div class="mockup-dots">
+                            <span></span><span></span><span></span>
+                        </div>
+                    </div>
+                    <div class="mockup-content">
+                        <div class="mockup-item">
+                            <div class="mockup-icon">🚙</div>
+                            <div class="mockup-text">
+                                <div class="mockup-title">Volkswagen Golf</div>
+                                <div class="mockup-subtitle">BA-123-AB • 2019</div>
+                            </div>
+                            <div class="mockup-badge success">Aktívny</div>
+                        </div>
+                        <div class="mockup-item">
+                            <div class="mockup-icon">🔧</div>
+                            <div class="mockup-text">
+                                <div class="mockup-title">Posledný servis</div>
+                                <div class="mockup-subtitle">Pred 15 dňami • 125 000 km</div>
+                            </div>
+                        </div>
+                        <div class="mockup-chart">
+                            <div class="chart-bar" style="height: 60%;"></div>
+                            <div class="chart-bar" style="height: 80%;"></div>
+                            <div class="chart-bar" style="height: 45%;"></div>
+                            <div class="chart-bar" style="height: 90%;"></div>
+                            <div class="chart-bar" style="height: 70%;"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    </section>
 
     <!-- FEATURES SECTION -->
-    <div id="features" class="features-section">
-        <div class="features-container">
+    <section id="features" class="features">
+        <div class="container">
             <div class="section-header">
-                <span class="section-badge">Funkcie</span>
-                <h2>Všetko, čo potrebujete</h2>
-                <p>Profesionálne nástroje pre správu vášho vozidla</p>
+                <span class="section-tag">Funkcie</span>
+                <h2 class="section-title">Všetko čo potrebujete</h2>
+                <p class="section-subtitle">Komplexné riešenie pre správu vášho vozidla</p>
             </div>
 
             <div class="features-grid">
+                <!-- Feature 1 -->
                 <div class="feature-card">
-                    <div class="feature-icon owner">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="12" cy="7" r="4"></circle>
+                    <div class="feature-icon blue">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                            <path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>
                         </svg>
                     </div>
-                    <h3>Pre majiteľov</h3>
-                    <p>Kompletný prehľad histórie vášho vozidla s možnosťou exportu a automatických upozornení.</p>
+                    <h3 class="feature-title">História vozidla</h3>
+                    <p class="feature-text">Kompletný prehľad všetkých servisných záznamov, údržby a opráv na jednom mieste.</p>
                     <ul class="feature-list">
-                        <li>
-                            <span class="check-icon">✓</span>
-                            <span>História všetkých servisov</span>
-                        </li>
-                        <li>
-                            <span class="check-icon">✓</span>
-                            <span>Export do PDF</span>
-                        </li>
-                        <li>
-                            <span class="check-icon">✓</span>
-                            <span>Pripomienky údržby</span>
-                        </li>
-                        <li>
-                            <span class="check-icon">✓</span>
-                            <span>Sledovanie nákladov</span>
-                        </li>
+                        <li>Chronologický zoznam záznamov</li>
+                        <li>Detaily každého servisu</li>
+                        <li>Pripojené fotky a dokumenty</li>
                     </ul>
                 </div>
 
-                <div class="feature-card featured">
-                    <div class="feature-badge">Najpopulárnejšie</div>
-                    <div class="feature-icon service">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+                <!-- Feature 2 -->
+                <div class="feature-card highlighted">
+                    <div class="featured-badge">Najpopulárnejšie</div>
+                    <div class="feature-icon purple">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 6v6l4 2"/>
                         </svg>
                     </div>
-                    <h3>Pre servisy</h3>
-                    <p>Efektívne nástroje pre správu klientskych vozidiel a evidenciu vykonaných prác.</p>
+                    <h3 class="feature-title">Automatické pripomienky</h3>
+                    <p class="feature-text">Nikdy nezabudnite na dôležitý servis. Dostanete notifikáciu v správny čas.</p>
                     <ul class="feature-list">
-                        <li>
-                            <span class="check-icon">✓</span>
-                            <span>Rýchly zápis záznamov</span>
-                        </li>
-                        <li>
-                            <span class="check-icon">✓</span>
-                            <span>Správa klientov</span>
-                        </li>
-                        <li>
-                            <span class="check-icon">✓</span>
-                            <span>Digitálne podpisy</span>
-                        </li>
-                        <li>
-                            <span class="check-icon">✓</span>
-                            <span>Prehľad histórie</span>
-                        </li>
+                        <li>Pripomienky podľa km</li>
+                        <li>Časové upozornenia</li>
+                        <li>STK a emisná kontrola</li>
                     </ul>
                 </div>
 
+                <!-- Feature 3 -->
                 <div class="feature-card">
-                    <div class="feature-icon admin">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="3"></circle>
-                            <path d="M12 1v6m0 6v6m-9-9h6m6 0h6"></path>
+                    <div class="feature-icon green">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="7 10 12 15 17 10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
                         </svg>
                     </div>
-                    <h3>Administrácia</h3>
-                    <p>Pokročilá správa systému s detailnými štatistikami a nastaveniami.</p>
+                    <h3 class="feature-title">Export do PDF</h3>
+                    <p class="feature-text">Vytvorte profesionálny report histórie vozidla pre predaj alebo archív.</p>
                     <ul class="feature-list">
-                        <li>
-                            <span class="check-icon">✓</span>
-                            <span>Správa používateľov</span>
-                        </li>
-                        <li>
-                            <span class="check-icon">✓</span>
-                            <span>Riadenie oprávnení</span>
-                        </li>
-                        <li>
-                            <span class="check-icon">✓</span>
-                            <span>Analytika a reporty</span>
-                        </li>
-                        <li>
-                            <span class="check-icon">✓</span>
-                            <span>Systémové nastavenia</span>
-                        </li>
+                        <li>Prehľadný dizajn</li>
+                        <li>Všetky detaily zahrnuté</li>
+                        <li>Okamžité stiahnutie</li>
+                    </ul>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="feature-card">
+                    <div class="feature-icon orange">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Pre autoservisy</h3>
+                    <p class="feature-text">Efektívna správa klientskych vozidiel a rýchle pridávanie servisných záznamov.</p>
+                    <ul class="feature-list">
+                        <li>Prístup k povoleným vozidlám</li>
+                        <li>Rýchly formulár</li>
+                        <li>História všetkých prác</li>
+                    </ul>
+                </div>
+
+                <!-- Feature 5 -->
+                <div class="feature-card">
+                    <div class="feature-icon red">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Bezpečnosť dát</h3>
+                    <p class="feature-text">Vaše údaje sú šifrované a chránené podľa najnovších bezpečnostných štandardov.</p>
+                    <ul class="feature-list">
+                        <li>SSL šifrovanie</li>
+                        <li>Pravidelné zálohy</li>
+                        <li>GDPR compliant</li>
+                    </ul>
+                </div>
+
+                <!-- Feature 6 -->
+                <div class="feature-card">
+                    <div class="feature-icon cyan">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                            <line x1="8" y1="21" x2="16" y2="21"/>
+                            <line x1="12" y1="17" x2="12" y2="21"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Prístup odkiaľkoľvek</h3>
+                    <p class="feature-text">Webová aplikácia funguje na všetkých zariadeniach - PC, tablet, mobil.</p>
+                    <ul class="feature-list">
+                        <li>Responzívny dizajn</li>
+                        <li>Žiadna inštalácia</li>
+                        <li>Všetky platformy</li>
                     </ul>
                 </div>
             </div>
         </div>
-    </div>
+    </section>
+
+    <!-- ABOUT SECTION -->
+    <section id="about" class="about">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text">
+                    <span class="section-tag">O aplikácii</span>
+                    <h2 class="section-title">Prečo Servisná knižka?</h2>
+                    <p class="about-description">
+                        Moderné vozidlá vyžadujú pravidelnú údržbu. S našou aplikáciou máte všetky 
+                        dôležité informácie vždy po ruke. Nemusíte hľadať papierové doklady, 
+                        všetko je uložené bezpečne v cloude.
+                    </p>
+                    <div class="about-benefits">
+                        <div class="benefit">
+                            <div class="benefit-icon">✓</div>
+                            <div class="benefit-text">
+                                <strong>Jednoduchosť</strong>
+                                <span>Intuitívne rozhranie pre každého</span>
+                            </div>
+                        </div>
+                        <div class="benefit">
+                            <div class="benefit-icon">✓</div>
+                            <div class="benefit-text">
+                                <strong>Spoľahlivosť</strong>
+                                <span>Vaše dáta sú vždy v bezpečí</span>
+                            </div>
+                        </div>
+                        <div class="benefit">
+                            <div class="benefit-icon">✓</div>
+                            <div class="benefit-text">
+                                <strong>Modernosť</strong>
+                                <span>Najnovšie technológie a dizajn</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-stats-visual">
+                    <div class="stats-card">
+                        <div class="stats-item">
+                            <div class="stats-icon">👥</div>
+                            <div class="stats-number">1500+</div>
+                            <div class="stats-label">Používateľov</div>
+                        </div>
+                        <div class="stats-item">
+                            <div class="stats-icon">🚗</div>
+                            <div class="stats-number">3200+</div>
+                            <div class="stats-label">Vozidiel</div>
+                        </div>
+                        <div class="stats-item">
+                            <div class="stats-icon">📋</div>
+                            <div class="stats-number">8000+</div>
+                            <div class="stats-label">Záznamov</div>
+                        </div>
+                        <div class="stats-item">
+                            <div class="stats-icon">⭐</div>
+                            <div class="stats-number">4.8/5</div>
+                            <div class="stats-label">Hodnotenie</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- CTA SECTION -->
-    <div class="cta-section">
-        <div class="cta-container">
+    <section class="cta">
+        <div class="container">
             <div class="cta-content">
-                <h2>Pripravení začať?</h2>
-                <p>Digitalizujte servisnú knižku vášho vozidla ešte dnes</p>
-                <a href="/login" class="cta-button">
-                    <span>Prihlásiť sa</span>
-                    <span class="btn-arrow">→</span>
-                </a>
+                <h2 class="cta-title">Pripravení začať?</h2>
+                <p class="cta-text">
+                    Vytvorte si účet zadarmo a začnite spravovať svoje vozidlo profesionálne
+                </p>
+                <div class="cta-buttons">
+                    <a href="/login" class="btn btn-white">
+                        <span>Prihlásiť sa</span>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                </div>
             </div>
         </div>
-    </div>
+    </section>
 
     <!-- FOOTER -->
     <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-main">
+        <div class="container">
+            <div class="footer-content">
                 <div class="footer-brand">
-                    <div class="footer-logo">
-                        <span class="logo-icon">🚗</span>
-                        <span>Servisná Knižka</span>
-                    </div>
-                    <p class="footer-description">
-                        Moderné riešenie pre správu servisných záznamov<br/>
-                        a údržby vášho vozidla.
-                    </p>
+                    <span class="brand-text">Servisná Knižka</span>
                 </div>
+                <p class="footer-text">
+                    Moderné riešenie pre správu servisnej dokumentácie vášho vozidla.
+                </p>
             </div>
             <div class="footer-bottom">
                 <p>&copy; 2026 Servisná Knižka. Všetky práva vyhradené.</p>
@@ -194,217 +329,388 @@
         box-sizing: border-box;
     }
 
+    :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --secondary: #0ea5e9;
+        --blue: #3b82f6;
+        --purple: #8b5cf6;
+        --green: #22c55e;
+        --orange: #f97316;
+        --red: #ef4444;
+        --cyan: #06b6d4;
+        --dark: #0f172a;
+        --gray: #64748b;
+        --light: #f1f5f9;
+        --white: #ffffff;
+    }
+
     .landing-page {
-        min-height: 100vh;
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        background: #fff;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        overflow-x: hidden;
     }
 
-    /* HERO SECTION */
-    .hero-section {
-        min-height: 100vh;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-        position: relative;
-        overflow: hidden;
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 24px;
     }
 
-    .hero-section::before {
-        content: '';
-        position: absolute;
+    /* NAVBAR */
+    .navbar {
+        position: fixed;
         top: 0;
         left: 0;
         right: 0;
-        bottom: 0;
-        background: 
-            radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-            radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
-        pointer-events: none;
+        z-index: 100;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        padding: 16px 0;
     }
 
-    /* NAVIGATION */
-    .nav-bar {
-        position: relative;
-        z-index: 10;
-        padding: 32px 0;
-    }
-
-    .nav-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 40px;
+    .navbar .container {
         display: flex;
         justify-content: space-between;
         align-items: center;
     }
 
-    .logo {
+    .nav-brand {
         display: flex;
         align-items: center;
         gap: 12px;
-        color: white;
-        font-size: 24px;
+        font-size: 20px;
         font-weight: 800;
+        color: var(--dark);
     }
 
-    .logo-icon {
-        font-size: 32px;
-        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+    .brand-icon {
+        font-size: 28px;
     }
 
-    .nav-links {
+    .nav-menu {
         display: flex;
-        gap: 16px;
         align-items: center;
+        gap: 32px;
     }
 
-    .nav-btn {
-        background: white;
-        color: #667eea;
-        padding: 12px 32px;
-        border-radius: 999px;
+    .nav-item {
+        color: var(--gray);
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 15px;
+        transition: color 0.2s;
+    }
+
+    .nav-item:hover {
+        color: var(--dark);
+    }
+
+    .btn-login {
+        background: var(--primary);
+        color: white;
+        padding: 10px 24px;
+        border-radius: 10px;
         text-decoration: none;
         font-weight: 600;
-        font-size: 16px;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        font-size: 15px;
+        transition: all 0.3s;
     }
 
-    .nav-btn:hover {
+    .btn-login:hover {
+        background: var(--primary-dark);
         transform: translateY(-2px);
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 10px 30px rgba(37, 99, 235, 0.3);
     }
 
-    /* HERO CONTENT */
-    .hero-content {
+    /* HERO */
+    .hero {
+        min-height: 100vh;
+        padding: 120px 0 80px;
         position: relative;
-        z-index: 5;
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 80px 40px 120px;
-        text-align: center;
-        color: white;
+        background: linear-gradient(135deg, #1e40af 0%, #0ea5e9 100%);
+        overflow: hidden;
+    }
+
+    .hero-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        overflow: hidden;
+    }
+
+    .shape {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(80px);
+        opacity: 0.3;
+        animation: float 20s infinite ease-in-out;
+    }
+
+    .shape-1 {
+        width: 500px;
+        height: 500px;
+        background: #06b6d4;
+        top: -200px;
+        right: -100px;
+    }
+
+    .shape-2 {
+        width: 400px;
+        height: 400px;
+        background: #3b82f6;
+        bottom: -150px;
+        left: -100px;
+        animation-delay: -5s;
+    }
+
+    .shape-3 {
+        width: 300px;
+        height: 300px;
+        background: #22c55e;
+        top: 50%;
+        left: 50%;
+        animation-delay: -10s;
+    }
+
+    @@keyframes float {
+        0%, 100% { transform: translate(0, 0); }
+        33% { transform: translate(30px, -30px); }
+        66% { transform: translate(-20px, 20px); }
+    }
+
+    .hero-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 60px;
+        align-items: center;
+        position: relative;
+        z-index: 1;
     }
 
     .hero-badge {
-        display: inline-block;
-        background: rgba(255, 255, 255, 0.25);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.2);
         backdrop-filter: blur(10px);
-        padding: 10px 24px;
+        padding: 8px 20px;
         border-radius: 999px;
-        font-size: 15px;
+        color: white;
+        font-size: 14px;
         font-weight: 600;
-        margin-bottom: 32px;
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        margin-bottom: 24px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .badge-icon {
+        font-size: 16px;
     }
 
     .hero-title {
-        font-size: 72px;
+        font-size: 64px;
         font-weight: 900;
-        margin-bottom: 28px;
+        color: white;
         line-height: 1.1;
-        text-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+        margin-bottom: 24px;
         letter-spacing: -0.02em;
     }
 
-    .hero-subtitle {
-        font-size: 22px;
-        line-height: 1.7;
-        margin-bottom: 48px;
-        opacity: 0.95;
-        font-weight: 400;
-    }
-
-    .hero-buttons {
-        display: flex;
-        gap: 20px;
-        justify-content: center;
-        flex-wrap: wrap;
-        margin-bottom: 80px;
-    }
-
-    .btn-primary, .btn-secondary {
-        padding: 18px 40px;
-        border-radius: 999px;
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 17px;
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        transition: all 0.3s ease;
-    }
-
-    .btn-primary {
-        background: white;
-        color: #667eea;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-    }
-
-    .btn-primary:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
-    }
-
-    .btn-arrow {
-        transition: transform 0.3s ease;
-        font-size: 20px;
-    }
-
-    .btn-primary:hover .btn-arrow {
-        transform: translateX(5px);
-    }
-
-    .btn-secondary {
-        background: rgba(255, 255, 255, 0.15);
-        backdrop-filter: blur(10px);
-        color: white;
-        border: 2px solid rgba(255, 255, 255, 0.4);
-    }
-
-    .btn-secondary:hover {
-        background: rgba(255, 255, 255, 0.25);
-        transform: translateY(-4px);
-    }
-
-    /* HERO STATS */
-    .hero-stats {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 40px;
-        max-width: 800px;
-        margin: 0 auto;
-    }
-
-    .stat-item {
-        text-align: center;
-    }
-
-    .stat-number {
-        font-size: 42px;
-        font-weight: 800;
-        margin-bottom: 8px;
+    .gradient-text {
         background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.8) 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
     }
 
+    .hero-description {
+        font-size: 20px;
+        color: rgba(255, 255, 255, 0.9);
+        line-height: 1.7;
+        margin-bottom: 40px;
+        font-weight: 400;
+    }
+
+    .hero-buttons {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 60px;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 16px 32px;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 16px;
+        transition: all 0.3s;
+        border: 2px solid transparent;
+    }
+
+    .btn-primary {
+        background: white;
+        color: var(--primary);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn-outline {
+        background: transparent;
+        color: white;
+        border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    .btn-outline:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateY(-3px);
+    }
+
+    .hero-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 32px;
+    }
+
+    .stat {
+        text-align: center;
+    }
+
+    .stat-number {
+        font-size: 36px;
+        font-weight: 800;
+        color: white;
+        margin-bottom: 8px;
+    }
+
     .stat-label {
         font-size: 14px;
-        opacity: 0.9;
+        color: rgba(255, 255, 255, 0.8);
         font-weight: 500;
     }
 
-    /* FEATURES SECTION */
-    .features-section {
-        padding: 120px 40px;
-        background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+    /* MOCKUP */
+    .hero-visual {
+        position: relative;
     }
 
-    .features-container {
-        max-width: 1200px;
-        margin: 0 auto;
+    .mockup-card {
+        background: white;
+        border-radius: 24px;
+        box-shadow: 0 50px 100px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+        transform: perspective(1000px) rotateY(-5deg) rotateX(5deg);
+        transition: transform 0.3s;
+    }
+
+    .mockup-card:hover {
+        transform: perspective(1000px) rotateY(0deg) rotateX(0deg);
+    }
+
+    .mockup-header {
+        background: linear-gradient(135deg, #1e40af, #0ea5e9);
+        padding: 16px;
+    }
+
+    .mockup-dots {
+        display: flex;
+        gap: 8px;
+    }
+
+    .mockup-dots span {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+    }
+
+    .mockup-content {
+        padding: 32px;
+    }
+
+    .mockup-item {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 20px;
+        background: #f8fafc;
+        border-radius: 16px;
+        margin-bottom: 16px;
+    }
+
+    .mockup-icon {
+        font-size: 32px;
+        width: 56px;
+        height: 56px;
+        background: white;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .mockup-text {
+        flex: 1;
+    }
+
+    .mockup-title {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--dark);
+        margin-bottom: 4px;
+    }
+
+    .mockup-subtitle {
+        font-size: 13px;
+        color: var(--gray);
+    }
+
+    .mockup-badge {
+        padding: 6px 14px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .mockup-badge.success {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .mockup-chart {
+        display: flex;
+        align-items: flex-end;
+        gap: 12px;
+        height: 120px;
+        padding: 20px;
+        background: #f8fafc;
+        border-radius: 16px;
+    }
+
+    .chart-bar {
+        flex: 1;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        border-radius: 6px;
+        animation: growBar 1s ease-out;
+    }
+
+    @@keyframes growBar {
+        from { height: 0; }
+    }
+
+    /* FEATURES */
+    .features {
+        padding: 120px 0;
+        background: white;
     }
 
     .section-header {
@@ -412,155 +718,233 @@
         margin-bottom: 80px;
     }
 
-    .section-badge {
+    .section-tag {
         display: inline-block;
-        background: linear-gradient(135deg, #667eea, #764ba2);
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
         color: white;
-        padding: 8px 20px;
+        padding: 6px 16px;
         border-radius: 999px;
         font-size: 13px;
         font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: 0.1em;
-        margin-bottom: 20px;
+        letter-spacing: 0.05em;
+        margin-bottom: 16px;
     }
 
-    .section-header h2 {
+    .section-title {
         font-size: 48px;
         font-weight: 900;
-        color: #1e293b;
+        color: var(--dark);
         margin-bottom: 16px;
         letter-spacing: -0.02em;
     }
 
-    .section-header p {
+    .section-subtitle {
         font-size: 20px;
-        color: #64748b;
-        font-weight: 400;
+        color: var(--gray);
+        max-width: 600px;
+        margin: 0 auto;
     }
 
     .features-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-        gap: 40px;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 32px;
     }
 
     .feature-card {
         background: white;
-        border-radius: 32px;
-        padding: 48px;
-        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
-        transition: all 0.4s ease;
+        padding: 40px;
+        border-radius: 24px;
+        border: 2px solid #e2e8f0;
+        transition: all 0.3s;
         position: relative;
-        border: 1px solid rgba(0, 0, 0, 0.05);
     }
 
     .feature-card:hover {
-        transform: translateY(-12px);
-        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+        transform: translateY(-8px);
+        border-color: var(--primary);
+        box-shadow: 0 20px 60px rgba(37, 99, 235, 0.15);
     }
 
-    .feature-card.featured {
-        border: 2px solid #667eea;
-        background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+    .feature-card.highlighted {
+        border-color: var(--primary);
+        background: linear-gradient(135deg, #ffffff 0%, #eff6ff 100%);
     }
 
-    .feature-badge {
+    .featured-badge {
         position: absolute;
-        top: -14px;
+        top: -12px;
         left: 50%;
         transform: translateX(-50%);
-        background: linear-gradient(135deg, #667eea, #764ba2);
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
         color: white;
-        padding: 8px 24px;
+        padding: 6px 16px;
         border-radius: 999px;
-        font-size: 12px;
+        font-size: 11px;
         font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: 0.1em;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        letter-spacing: 0.05em;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
     }
 
     .feature-icon {
-        width: 90px;
-        height: 90px;
-        border-radius: 24px;
+        width: 72px;
+        height: 72px;
+        border-radius: 16px;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-bottom: 28px;
+        margin-bottom: 24px;
         color: white;
     }
 
-    .feature-icon.owner {
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
-    }
+    .feature-icon.blue { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+    .feature-icon.purple { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+    .feature-icon.green { background: linear-gradient(135deg, #22c55e, #16a34a); }
+    .feature-icon.orange { background: linear-gradient(135deg, #f97316, #ea580c); }
+    .feature-icon.red { background: linear-gradient(135deg, #ef4444, #dc2626); }
+    .feature-icon.cyan { background: linear-gradient(135deg, #06b6d4, #0891b2); }
 
-    .feature-icon.service {
-        background: linear-gradient(135deg, #f093fb, #f5576c);
-        box-shadow: 0 10px 30px rgba(240, 147, 251, 0.3);
-    }
-
-    .feature-icon.admin {
-        background: linear-gradient(135deg, #4facfe, #00f2fe);
-        box-shadow: 0 10px 30px rgba(79, 172, 254, 0.3);
-    }
-
-    .feature-card h3 {
-        font-size: 26px;
+    .feature-title {
+        font-size: 22px;
         font-weight: 800;
-        color: #1e293b;
-        margin-bottom: 16px;
-        letter-spacing: -0.01em;
+        color: var(--dark);
+        margin-bottom: 12px;
     }
 
-    .feature-card p {
-        font-size: 16px;
-        color: #64748b;
+    .feature-text {
+        font-size: 15px;
+        color: var(--gray);
         line-height: 1.7;
-        margin-bottom: 28px;
+        margin-bottom: 24px;
     }
 
     .feature-list {
         list-style: none;
         display: flex;
         flex-direction: column;
-        gap: 14px;
+        gap: 12px;
     }
 
     .feature-list li {
-        font-size: 15px;
-        color: #475569;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        font-weight: 500;
+        font-size: 14px;
+        color: var(--gray);
+        padding-left: 24px;
+        position: relative;
     }
 
-    .check-icon {
-        width: 24px;
-        height: 24px;
-        background: linear-gradient(135deg, #10b981, #059669);
-        border-radius: 50%;
+    .feature-list li::before {
+        content: "→";
+        position: absolute;
+        left: 0;
+        color: var(--primary);
+        font-weight: 700;
+    }
+
+    /* ABOUT */
+    .about {
+        padding: 120px 0;
+        background: var(--light);
+    }
+
+    .about-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 80px;
+        align-items: center;
+    }
+
+    .about-description {
+        font-size: 18px;
+        color: var(--gray);
+        line-height: 1.8;
+        margin: 24px 0 40px;
+    }
+
+    .about-benefits {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .benefit {
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+    }
+
+    .benefit-icon {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        border-radius: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: white;
-        font-size: 14px;
         font-weight: 700;
         flex-shrink: 0;
     }
 
-    /* CTA SECTION */
-    .cta-section {
-        padding: 100px 40px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    .benefit-text {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .benefit-text strong {
+        font-size: 16px;
+        color: var(--dark);
+        font-weight: 700;
+    }
+
+    .benefit-text span {
+        font-size: 14px;
+        color: var(--gray);
+    }
+
+    .stats-card {
+        background: white;
+        border-radius: 24px;
+        padding: 40px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 32px;
+    }
+
+    .stats-item {
+        text-align: center;
+    }
+
+    .stats-icon {
+        font-size: 40px;
+        margin-bottom: 12px;
+    }
+
+    .stats-number {
+        font-size: 32px;
+        font-weight: 800;
+        color: var(--dark);
+        margin-bottom: 8px;
+    }
+
+    .stats-label {
+        font-size: 14px;
+        color: var(--gray);
+        font-weight: 500;
+    }
+
+    /* CTA */
+    .cta {
+        padding: 100px 0;
+        background: linear-gradient(135deg, #1e40af 0%, #0ea5e9 100%);
         position: relative;
         overflow: hidden;
     }
 
-    .cta-section::before {
+    .cta::before {
         content: '';
         position: absolute;
         top: 0;
@@ -570,15 +954,13 @@
         background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
     }
 
-    .cta-container {
-        max-width: 800px;
-        margin: 0 auto;
+    .cta-content {
         text-align: center;
         position: relative;
         z-index: 1;
     }
 
-    .cta-content h2 {
+    .cta-title {
         font-size: 52px;
         font-weight: 900;
         color: white;
@@ -586,74 +968,52 @@
         letter-spacing: -0.02em;
     }
 
-    .cta-content p {
-        font-size: 22px;
-        color: rgba(255, 255, 255, 0.95);
+    .cta-text {
+        font-size: 20px;
+        color: rgba(255, 255, 255, 0.9);
         margin-bottom: 40px;
-        font-weight: 400;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
     }
 
-    .cta-button {
-        display: inline-flex;
-        align-items: center;
-        gap: 12px;
+    .btn-white {
         background: white;
-        color: #667eea;
-        padding: 20px 48px;
-        border-radius: 999px;
-        text-decoration: none;
-        font-weight: 700;
-        font-size: 18px;
+        color: var(--primary);
         box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
-        transition: all 0.3s ease;
     }
 
-    .cta-button:hover {
+    .btn-white:hover {
         transform: translateY(-4px);
-        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
-    }
-
-    .cta-button .btn-arrow {
-        font-size: 22px;
-    }
-
-    .cta-button:hover .btn-arrow {
-        transform: translateX(5px);
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
     }
 
     /* FOOTER */
     .footer {
-        background: #0f172a;
+        background: var(--dark);
         color: white;
-        padding: 60px 40px 40px;
+        padding: 60px 0 32px;
     }
 
     .footer-content {
-        max-width: 1200px;
-        margin: 0 auto;
-    }
-
-    .footer-main {
-        margin-bottom: 40px;
+        text-align: center;
+        margin-bottom: 32px;
     }
 
     .footer-brand {
-        max-width: 400px;
-    }
-
-    .footer-logo {
-        display: flex;
+        display: inline-flex;
         align-items: center;
         gap: 12px;
-        font-size: 22px;
+        font-size: 20px;
         font-weight: 800;
-        margin-bottom: 20px;
+        margin-bottom: 16px;
     }
 
-    .footer-description {
+    .footer-text {
         color: #94a3b8;
         font-size: 15px;
-        line-height: 1.7;
+        max-width: 400px;
+        margin: 0 auto;
     }
 
     .footer-bottom {
@@ -668,55 +1028,86 @@
     }
 
     /* RESPONSIVE */
-    @@media (max-width: 768px) {
+    @@media (max-width: 1024px) {
+        .hero-container,
+        .about-content {
+            grid-template-columns: 1fr;
+            gap: 48px;
+        }
+
+        .hero-visual {
+            order: -1;
+        }
+
+        .features-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
         .hero-title {
             font-size: 48px;
         }
 
-        .hero-subtitle {
-            font-size: 18px;
+        .section-title,
+        .cta-title {
+            font-size: 40px;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .navbar .container {
+            flex-direction: column;
+            gap: 16px;
         }
 
-        .nav-container {
-            padding: 0 20px;
+        .nav-menu {
+            width: 100%;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 16px;
         }
 
-        .hero-content {
-            padding: 60px 20px 80px;
+        .hero {
+            padding: 100px 0 60px;
+        }
+
+        .hero-title {
+            font-size: 36px;
+        }
+
+        .hero-description {
+            font-size: 16px;
+        }
+
+        .hero-buttons {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+            justify-content: center;
         }
 
         .hero-stats {
             grid-template-columns: 1fr;
-            gap: 32px;
-        }
-
-        .features-section {
-            padding: 80px 20px;
-        }
-
-        .section-header h2 {
-            font-size: 36px;
+            gap: 24px;
         }
 
         .features-grid {
             grid-template-columns: 1fr;
+            gap: 24px;
         }
 
-        .cta-content h2 {
-            font-size: 36px;
+        .section-title {
+            font-size: 32px;
         }
 
-        .cta-content p {
-            font-size: 18px;
+        .cta-title {
+            font-size: 32px;
         }
 
-        .logo-text {
-            display: none;
-        }
-
-        .btn-primary, .btn-secondary {
-            width: 100%;
-            justify-content: center;
+        .stats-card {
+            grid-template-columns: 1fr;
+            gap: 24px;
         }
     }
 </style>
