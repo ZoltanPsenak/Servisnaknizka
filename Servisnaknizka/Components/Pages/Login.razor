@@ -1,0 +1,145 @@
+@page "/login"
+@rendermode InteractiveServer
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Prihl·senie</PageTitle>
+
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-header">
+            <h1>Elektronick· servisn· kniûka</h1>
+            <p>Prihl·senie do systÈmu</p>
+        </div>
+
+        <EditForm Model="loginModel" OnValidSubmit="HandleLogin" class="login-form">
+            <DataAnnotationsValidator />
+            
+            <div class="form-group">
+                <label for="email">E-mailov· adresa</label>
+                <InputText id="email" @bind-Value="loginModel.Email" class="form-control" placeholder="v·ö@email.sk" />
+                <ValidationMessage For="@(() => loginModel.Email)" />
+            </div>
+
+            <div class="form-group">
+                <label for="password">Heslo</label>
+                <InputText id="password" @bind-Value="loginModel.Password" type="password" class="form-control" placeholder="Zadajte heslo" />
+                <ValidationMessage For="@(() => loginModel.Password)" />
+            </div>
+
+            <div class="form-check">
+                <InputCheckbox id="remember" @bind-Value="loginModel.RememberMe" class="form-check-input" />
+                <label for="remember" class="form-check-label">
+                    Zapam‰taù si ma
+                </label>
+            </div>
+
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="alert alert-danger" role="alert">
+                    @errorMessage
+                </div>
+            }
+
+            <button type="submit" class="btn btn-primary btn-login" disabled="@isLoading">
+                @if (isLoading)
+                {
+                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                }
+                Prihl·siù sa
+            </button>
+
+            <div class="login-links">
+                <a href="/register" class="text-decoration-none">Nem·te ˙Ëet? Registrujte sa</a>
+                <a href="/forgot-password" class="text-decoration-none">ZabudnutÈ heslo?</a>
+            </div>
+
+            <!-- Zobrazenie testovacÌch ˙dajov -->
+            <div class="mt-4 p-3 bg-light rounded">
+                <small class="text-muted">
+                    <strong>Testovacie ˙Ëty:</strong><br/>
+                    <strong>Admin:</strong> admin@servis.sk / Admin123!<br/>
+                    <strong>Majiteæ:</strong> majitel@vozidlo.sk / Owner123!<br/>
+                    <strong>Servis:</strong> servis@autoservis.sk / Service123!
+                </small>
+            </div>
+        </EditForm>
+
+        <div class="login-footer">
+            <p class="text-muted">
+                BezpeËn˝ systÈm pre spr·vu servisn˝ch z·znamov vozidiel
+            </p>
+        </div>
+    </div>
+</div>
+
+@code {
+    private LoginModel loginModel = new();
+    private string errorMessage = string.Empty;
+    private bool isLoading = false;
+
+    private async Task HandleLogin()
+    {
+        isLoading = true;
+        errorMessage = string.Empty;
+        StateHasChanged();
+
+        try
+        {
+            // Simulate authentication delay
+            await Task.Delay(1000);
+
+            // ? OPRAVEN… HESL¡ - teraz zodpovedaj˙ datab·ze
+            if (loginModel.Email == "admin@servis.sk" && loginModel.Password == "Admin123!")
+            {
+                await JSRuntime.InvokeVoidAsync("sessionStorage.setItem", "isAuthenticated", "true");
+                await JSRuntime.InvokeVoidAsync("sessionStorage.setItem", "userEmail", loginModel.Email);
+                await JSRuntime.InvokeVoidAsync("sessionStorage.setItem", "userRole", "admin");
+                
+                Navigation.NavigateTo("/dashboard", forceLoad: true);
+            }
+            else if (loginModel.Email == "majitel@vozidlo.sk" && loginModel.Password == "Owner123!")
+            {
+                await JSRuntime.InvokeVoidAsync("sessionStorage.setItem", "isAuthenticated", "true");
+                await JSRuntime.InvokeVoidAsync("sessionStorage.setItem", "userEmail", loginModel.Email);
+                await JSRuntime.InvokeVoidAsync("sessionStorage.setItem", "userRole", "owner");
+                
+                Navigation.NavigateTo("/dashboard", forceLoad: true);
+            }
+            else if (loginModel.Email == "servis@autoservis.sk" && loginModel.Password == "Service123!")
+            {
+                await JSRuntime.InvokeVoidAsync("sessionStorage.setItem", "isAuthenticated", "true");
+                await JSRuntime.InvokeVoidAsync("sessionStorage.setItem", "userEmail", loginModel.Email);
+                await JSRuntime.InvokeVoidAsync("sessionStorage.setItem", "userRole", "service");
+                
+                Navigation.NavigateTo("/dashboard", forceLoad: true);
+            }
+            else
+            {
+                errorMessage = "Nespr·vne prihlasovacie ˙daje. Sk˙ste prosÌm znova.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "Chyba pri prihlasovanÌ. Sk˙ste to prosÌm znova.";
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    public class LoginModel
+    {
+        [Required(ErrorMessage = "E-mailov· adresa je povinn·")]
+        [EmailAddress(ErrorMessage = "Nespr·vny form·t e-mailovej adresy")]
+        public string Email { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Heslo je povinnÈ")]
+        [MinLength(6, ErrorMessage = "Heslo musÌ maù aspoÚ 6 znakov")]
+        public string Password { get; set; } = string.Empty;
+
+        public bool RememberMe { get; set; } = false;
+    }
+}

@@ -1,0 +1,1464 @@
+﻿@page "/dashboard"
+@layout EmptyLayout
+@rendermode InteractiveServer
+@inject IJSRuntime JSRuntime
+@inject NavigationManager Navigation
+@inject ApplicationDbContext DbContext
+
+<PageTitle>Dashboard - Servisná knižka</PageTitle>
+
+<div class="modern-dashboard">
+@if (!isInitialized)
+{
+    <div class="loading-screen">
+        <div class="loading-spinner"></div>
+        <p>Načítavam...</p>
+    </div>
+}
+else if (!isAuthenticated)
+{
+    <div class="loading-screen">
+        <p>Presmerováva sa na prihlasovaciu stránku...</p>
+    </div>
+}
+else
+{
+    <div class="dashboard-container">
+        <!-- MODERN SIDEBAR -->
+        <aside class="modern-sidebar">
+            <div class="sidebar-header">
+                <div class="logo-wrapper">
+                    <div class="logo-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M19 9L12 3L5 9V19C5 19.5304 5.21071 20.0391 5.58579 20.4142C5.96086 20.7893 6.46957 21 7 21H17C17.5304 21 18.0391 20.7893 18.4142 20.4142C18.7893 20.0391 19 19.5304 19 19V9Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="logo-text">
+                        <h2>ServisKnižka</h2>
+                        <p>Digitálna evidencia</p>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <span class="nav-section-title">MENU</span>
+                    <ul class="nav-items">
+                        <li>
+                            <a href="/dashboard" class="nav-link active">
+                                <span class="nav-icon">📊</span>
+                                <span>Dashboard</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/service-records" class="nav-link">
+                                <span class="nav-icon">🔧</span>
+                                <span>Servisné záznamy</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/profile" class="nav-link">
+                                <span class="nav-icon">👤</span>
+                                <span>Môj profil</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                @if (userRole == "admin" || userRole == "service")
+                {
+                    <div class="nav-section">
+                        <span class="nav-section-title">SPRÁVA</span>
+                        <ul class="nav-items">
+                            <li>
+                                <a href="/vehicles/manage" class="nav-link">
+                                    <span class="nav-icon">🚗</span>
+                                    <span>Vozidlá</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/permissions" class="nav-link">
+                                    <span class="nav-icon">🔐</span>
+                                    <span>Oprávnenia</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                }
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        @userEmail.Substring(0, 1).ToUpper()
+                    </div>
+                    <div class="user-details">
+                        <strong>@userEmail</strong>
+                        <span>@GetRoleDisplayName()</span>
+                    </div>
+                </div>
+                <button class="btn-logout" @onclick="Logout">
+                    <span>🚪</span> Odhlásiť
+                </button>
+            </div>
+        </aside>
+
+        <!-- MODERN MAIN CONTENT -->
+        <main class="main-content">
+            <!-- TOP BAR -->
+            <header class="top-bar">
+                <div class="top-bar-left">
+                    <h1>Prehľad vozidiel</h1>
+                    <p>Kompletná evidencia servisných záznamov</p>
+                </div>
+                <div class="top-bar-right">
+                    <span class="time-badge">
+                        🕒 @DateTime.Now.ToString("HH:mm")
+                    </span>
+                    <button class="btn-secondary" @onclick="ExportAllRecords">
+                        📥 Export
+                    </button>
+                    @if (userRole == "service" || userRole == "admin")
+                    {
+                        <button class="btn-primary" @onclick="() => showNewRecordForm = true">
+                            ➕ Nový záznam
+                        </button>
+                    }
+                </div>
+            </header>
+
+            <!-- CONTENT GRID -->
+            <div class="content-layout">
+                <!-- LEFT: VEHICLES -->
+                <section class="card vehicle-card">
+                    <div class="card-header">
+                        <div>
+                            <h3>@(userRole == "owner" ? "Moje vozidlá" : "Vozidlá v evidencii")</h3>
+                            <p class="card-subtitle">
+                                @if (vehicles != null && vehicles.Any())
+                                {
+                                    <span class="badge-count">@vehicles.Count()</span>
+                                    @(" vozidiel v systéme")
+                                }
+                                else
+                                {
+                                    @("Žiadne vozidlá")
+                                }
+                            </p>
+                        </div>
+                        @if (userRole == "owner" || userRole == "admin")
+                        {
+                            <button class="btn-add" @onclick="ShowAddVehicleModal">
+                                ➕ Pridať
+                            </button>
+                        }
+                    </div>
+
+                    <div class="vehicle-grid">
+                        @if (vehicles != null && vehicles.Any())
+                        {
+                            @foreach (var vehicle in vehicles)
+                            {
+                                <div class="vehicle-card-item @(selectedVehicleId == vehicle.Id ? "selected" : "")" 
+                                     @onclick="() => SelectVehicle(vehicle.Id)">
+                                    <div class="vehicle-icon">🚗</div>
+                                    <div class="vehicle-info">
+                                        <h4>@vehicle.Brand @vehicle.Model</h4>
+                                        <p class="vehicle-details">
+                                            <span class="detail-badge">@vehicle.Year</span>
+                                            <span class="detail-badge">@vehicle.LicensePlate</span>
+                                        </p>
+                                        <p class="vehicle-vin">VIN: @vehicle.VIN.Substring(Math.Max(0, vehicle.VIN.Length - 8))</p>
+                                    </div>
+                                    <div class="vehicle-status">
+                                        <span class="status-dot @GetStatusClass(vehicle)"></span>
+                                        <span class="status-text">@GetVehicleServiceStatus(vehicle)</span>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="empty-state">
+                                <div class="empty-icon">🚗</div>
+                                <h4>Žiadne vozidlá</h4>
+                                <p>Začnite pridaním vášho prvého vozidla</p>
+                                @if (userRole == "owner" || userRole == "admin")
+                                {
+                                    <button class="btn-primary" @onclick="ShowAddVehicleModal">
+                                        ➕ Pridať vozidlo
+                                    </button>
+                                }
+                            </div>
+                        }
+                    </div>
+
+                    @if (selectedVehicle != null)
+                    {
+                        <div class="divider"></div>
+
+                        <div class="service-history">
+                            <div class="section-header">
+                                <h3>📋 História údržby</h3>
+                                <span class="record-count">
+                                    @if (serviceRecords != null && serviceRecords.Any())
+                                    {
+                                        @($"{serviceRecords.Count()} záznamov")
+                                    }
+                                </span>
+                            </div>
+
+                            <div class="table-container">
+                                <table class="modern-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Dátum</th>
+                                            <th>Popis úkonu</th>
+                                            <th>Kilometre</th>
+                                            <th>Typ</th>
+                                            <th>Cena</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (serviceRecords != null && serviceRecords.Any())
+                                        {
+                                            @foreach (var record in serviceRecords.OrderByDescending(r => r.ServiceDate).Take(10))
+                                            {
+                                                <tr class="table-row">
+                                                    <td>
+                                                        <span class="date-badge">@record.ServiceDate.ToString("dd.MM.yyyy")</span>
+                                                    </td>
+                                                    <td>@record.Description</td>
+                                                    <td>
+                                                        <span class="km-badge">@record.Mileage.ToString("N0") km</span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="type-badge">@(record.ServiceType ?? "—")</span>
+                                                    </td>
+                                                    <td>
+                                                        <strong>@(record.Cost.HasValue ? $"{record.Cost:N2} €" : "—")</strong>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td colspan="5" class="empty-row">
+                                                    <div class="empty-table">
+                                                        <span class="empty-icon">📝</span>
+                                                        <p>Žiadne servisné záznamy</p>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    }
+                </section>
+
+                <!-- RIGHT: FORM OR INFO -->
+                @if ((userRole == "service" || userRole == "admin") && selectedVehicle != null)
+                {
+                    <section class="card form-card">
+                        <div class="card-header">
+                            <div>
+                                <h3>➕ Nový záznam</h3>
+                                <p class="card-subtitle">
+                                    @selectedVehicle.Brand @selectedVehicle.Model
+                                    <span class="license-badge">@selectedVehicle.LicensePlate</span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <EditForm Model="newServiceRecord" OnValidSubmit="SaveServiceRecord" class="modern-form">
+                            <DataAnnotationsValidator />
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>📅 Dátum</label>
+                                    <InputDate @bind-Value="newServiceRecord.ServiceDate" class="form-input" />
+                                    <ValidationMessage For="@(() => newServiceRecord.ServiceDate)" class="validation-error" />
+                                </div>
+                                <div class="form-group">
+                                    <label>🛣️ Kilometre</label>
+                                    <InputNumber @bind-Value="newServiceRecord.Mileage" class="form-input" placeholder="185200" />
+                                    <ValidationMessage For="@(() => newServiceRecord.Mileage)" class="validation-error" />
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>🔧 Typ úkonu</label>
+                                    <InputSelect @bind-Value="newServiceRecord.ServiceType" class="form-select">
+                                        <option value="">Vyber typ...</option>
+                                        <option value="Pravidelná prehliadka">Pravidelná prehliadka</option>
+                                        <option value="Výmena oleja">Výmena oleja</option>
+                                        <option value="Brzdy">Brzdy</option>
+                                        <option value="Pneumatiky">Pneumatiky</option>
+                                        <option value="Motor / mechanické opravy">Motor / mechanické</option>
+                                        <option value="Elektronika / diagnostika">Elektronika</option>
+                                        <option value="STK / EK">STK / EK</option>
+                                        <option value="Iné">Iné</option>
+                                    </InputSelect>
+                                </div>
+                                <div class="form-group">
+                                    <label>💰 Cena (€)</label>
+                                    <InputNumber @bind-Value="newServiceRecord.Cost" class="form-input" placeholder="150.00" />
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>📝 Popis úkonu *</label>
+                                <InputTextArea @bind-Value="newServiceRecord.Description" 
+                                               class="form-textarea"
+                                               placeholder="Stručne popíšte vykonané práce..." />
+                                <ValidationMessage For="@(() => newServiceRecord.Description)" class="validation-error" />
+                            </div>
+
+                            <div class="form-group">
+                                <label>🔩 Použité diely</label>
+                                <InputText @bind-Value="newServiceRecord.PartsUsed" 
+                                           class="form-input"
+                                           placeholder="Olejový filter, brzdové platničky..." />
+                            </div>
+
+                            <div class="form-group">
+                                <label>💬 Poznámka</label>
+                                <InputTextArea @bind-Value="newServiceRecord.Notes" 
+                                               class="form-textarea"
+                                               placeholder="Odporúčania, upozornenia..." />
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(formMessage))
+                            {
+                                <div class="alert @(formSuccess ? "alert-success" : "alert-error")">
+                                    <span class="alert-icon">@(formSuccess ? "✓" : "⚠")</span>
+                                    @formMessage
+                                </div>
+                            }
+
+                            <div class="form-actions">
+                                <button type="button" class="btn-secondary" @onclick="ClearForm">
+                                    Zrušiť
+                                </button>
+                                <button type="submit" class="btn-primary" disabled="@isLoading">
+                                    @if (isLoading)
+                                    {
+                                        <span class="spinner-sm"></span>
+                                    }
+                                    else
+                                    {
+                                        <span>💾 Uložiť</span>
+                                    }
+                                </button>
+                            </div>
+                        </EditForm>
+                    </section>
+                }
+                else if (selectedVehicle == null && vehicles != null && vehicles.Any())
+                {
+                    <section class="card info-card">
+                        <div class="info-content">
+                            <div class="info-icon">👈</div>
+                            <h3>Vyberte vozidlo</h3>
+                            <p>Kliknite na vozidlo v zozname pre zobrazenie detailov a servisnej histórie</p>
+                        </div>
+                    </section>
+                }
+            </div>
+        </main>
+    </div>
+}
+</div>
+
+<style>
+    /* MODERN DASHBOARD STYLES */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    :root {
+        --primary: #6366f1;
+        --primary-dark: #4f46e5;
+        --secondary: #8b5cf6;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --dark: #1e293b;
+        --dark-light: #334155;
+        --gray: #64748b;
+        --gray-light: #e2e8f0;
+        --bg: #f8fafc;
+        --white: #ffffff;
+        --shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+        --radius: 16px;
+        --radius-sm: 12px;
+    }
+
+    .modern-dashboard {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .dashboard-container {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        min-height: 100vh;
+    }
+
+    /* MODERN SIDEBAR */
+    .modern-sidebar {
+        background: var(--white);
+        box-shadow: var(--shadow);
+        display: flex;
+        flex-direction: column;
+        padding: 24px;
+        gap: 24px;
+    }
+
+    .sidebar-header {
+        padding-bottom: 24px;
+        border-bottom: 2px solid var(--gray-light);
+    }
+
+    .logo-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .logo-icon {
+        width: 48px;
+        height: 48px;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+    }
+
+    .logo-text h2 {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--dark);
+        margin: 0;
+    }
+
+    .logo-text p {
+        font-size: 12px;
+        color: var(--gray);
+        margin: 0;
+    }
+
+    .sidebar-nav {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .nav-section-title {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--gray);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .nav-items {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .nav-link {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        border-radius: var(--radius-sm);
+        color: var(--dark-light);
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+
+    .nav-link:hover {
+        background: var(--gray-light);
+        transform: translateX(4px);
+    }
+
+    .nav-link.active {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .nav-icon {
+        font-size: 20px;
+    }
+
+    .sidebar-footer {
+        border-top: 2px solid var(--gray-light);
+        padding-top: 20px;
+    }
+
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 16px;
+    }
+
+    .user-details {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .user-details strong {
+        font-size: 13px;
+        color: var(--dark);
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .user-details span {
+        font-size: 11px;
+        color: var(--gray);
+    }
+
+    .btn-logout {
+        width: 100%;
+        padding: 10px;
+        background: var(--gray-light);
+        border: none;
+        border-radius: var(--radius-sm);
+        color: var(--dark);
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .btn-logout:hover {
+        background: var(--danger);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-sm);
+    }
+
+    /* MAIN CONTENT */
+    .main-content {
+        background: var(--bg);
+        padding: 32px;
+        overflow-y: auto;
+    }
+
+    .top-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 32px;
+        padding: 24px;
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .top-bar-left h1 {
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--dark);
+        margin: 0 0 4px 0;
+    }
+
+    .top-bar-left p {
+        font-size: 14px;
+        color: var(--gray);
+        margin: 0;
+    }
+
+    .top-bar-right {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .time-badge {
+        padding: 8px 16px;
+        background: var(--gray-light);
+        border-radius: 999px;
+        font-size: 13px;
+        color: var(--dark);
+        font-weight: 600;
+    }
+
+    /* BUTTONS */
+    .btn-primary, .btn-secondary, .btn-add {
+        padding: 10px 20px;
+        border-radius: var(--radius-sm);
+        border: none;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+    }
+
+    .btn-primary:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .btn-secondary {
+        background: white;
+        color: var(--dark);
+        border: 2px solid var(--gray-light);
+    }
+
+    .btn-secondary:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+        transform: translateY(-2px);
+    }
+
+    .btn-add {
+        background: var(--success);
+        color: white;
+    }
+
+    .btn-add:hover {
+        background: #059669;
+        transform: translateY(-2px);
+    }
+
+    /* CONTENT LAYOUT */
+    .content-layout {
+        display: grid;
+        grid-template-columns: 1.8fr 1.2fr;
+        gap: 24px;
+        align-items: start;
+    }
+
+    /* CARD */
+    .card {
+        background: white;
+        border-radius: var(--radius);
+        padding: 24px;
+        box-shadow: var(--shadow-sm);
+        transition: all 0.3s ease;
+    }
+
+    .card:hover {
+        box-shadow: var(--shadow);
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 24px;
+    }
+
+    .card-header h3 {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--dark);
+        margin: 0 0 4px 0;
+    }
+
+    .card-subtitle {
+        font-size: 13px;
+        color: var(--gray);
+        margin: 0;
+    }
+
+    .badge-count {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 24px;
+        height: 24px;
+        padding: 0 8px;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    /* VEHICLE GRID */
+    .vehicle-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .vehicle-card-item {
+        display: grid;
+        grid-template-columns: 60px 1fr auto;
+        gap: 16px;
+        padding: 16px;
+        background: linear-gradient(135deg, #f8fafc, #ffffff);
+        border: 2px solid var(--gray-light);
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .vehicle-card-item:hover {
+        border-color: var(--primary);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .vehicle-card-item.selected {
+        border-color: var(--primary);
+        background: linear-gradient(135deg, #eef2ff, #f5f3ff);
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+    }
+
+    .vehicle-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+    }
+
+    .vehicle-info h4 {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--dark);
+        margin: 0 0 8px 0;
+    }
+
+    .vehicle-details {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 4px;
+    }
+
+    .detail-badge {
+        padding: 4px 12px;
+        background: var(--gray-light);
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--dark);
+    }
+
+    .vehicle-vin {
+        font-size: 11px;
+        color: var(--gray);
+        font-family: 'Courier New', monospace;
+        margin: 0;
+    }
+
+    .vehicle-status {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 4px;
+        justify-content: center;
+    }
+
+    .status-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        margin-bottom: 4px;
+    }
+
+    .status-dot.success {
+        background: var(--success);
+        box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);
+    }
+
+    .status-dot.warning {
+        background: var(--warning);
+        box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.2);
+    }
+
+    .status-dot.danger {
+        background: var(--danger);
+        box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.2);
+    }
+
+    .status-text {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--gray);
+    }
+
+    /* DIVIDER */
+    .divider {
+        height: 2px;
+        background: var(--gray-light);
+        margin: 24px 0;
+    }
+
+    /* SERVICE HISTORY */
+    .service-history {
+        margin-top: 24px;
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+    }
+
+    .section-header h3 {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--dark);
+        margin: 0;
+    }
+
+    .record-count {
+        padding: 6px 12px;
+        background: var(--gray-light);
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--dark);
+    }
+
+    /* TABLE */
+    .table-container {
+        border-radius: var(--radius-sm);
+        overflow: hidden;
+        border: 2px solid var(--gray-light);
+    }
+
+    .modern-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .modern-table thead {
+        background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+    }
+
+    .modern-table th {
+        padding: 12px 16px;
+        text-align: left;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--dark);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .modern-table tbody tr {
+        border-top: 1px solid var(--gray-light);
+        transition: all 0.2s ease;
+    }
+
+    .modern-table tbody tr:hover {
+        background: #f8fafc;
+    }
+
+    .modern-table td {
+        padding: 12px 16px;
+        font-size: 13px;
+        color: var(--dark-light);
+    }
+
+    .date-badge, .km-badge, .type-badge {
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .date-badge {
+        background: #dbeafe;
+        color: #1e40af;
+    }
+
+    .km-badge {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .type-badge {
+        background: #e0e7ff;
+        color: #4338ca;
+    }
+
+    /* FORM */
+    .modern-form {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .form-group label {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--dark);
+    }
+
+    .form-input, .form-select, .form-textarea {
+        padding: 12px 16px;
+        border: 2px solid var(--gray-light);
+        border-radius: var(--radius-sm);
+        font-size: 14px;
+        font-family: inherit;
+        transition: all 0.2s ease;
+        background: white;
+    }
+
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+    }
+
+    .form-textarea {
+        min-height: 80px;
+        resize: vertical;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+        margin-top: 8px;
+    }
+
+    .validation-error {
+        font-size: 12px;
+        color: var(--danger);
+        font-weight: 500;
+    }
+
+    /* ALERTS */
+    .alert {
+        padding: 12px 16px;
+        border-radius: var(--radius-sm);
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .alert-success {
+        background: #d1fae5;
+        color: #065f46;
+        border: 2px solid #10b981;
+    }
+
+    .alert-error {
+        background: #fee2e2;
+        color: #991b1b;
+        border: 2px solid var(--danger);
+    }
+
+    .alert-icon {
+        font-size: 20px;
+    }
+
+    /* EMPTY STATE */
+    .empty-state {
+        text-align: center;
+        padding: 48px 24px;
+    }
+
+    .empty-icon {
+        font-size: 64px;
+        margin-bottom: 16px;
+    }
+
+    .empty-state h4 {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--dark);
+        margin: 0 0 8px 0;
+    }
+
+    .empty-state p {
+        font-size: 14px;
+        color: var(--gray);
+        margin: 0 0 24px 0;
+    }
+
+    .empty-table {
+        padding: 40px;
+        text-align: center;
+    }
+
+    .empty-table .empty-icon {
+        font-size: 48px;
+        margin-bottom: 12px;
+    }
+
+    .empty-table p {
+        font-size: 14px;
+        color: var(--gray);
+        margin: 0;
+    }
+
+    .empty-row {
+        border: none !important;
+    }
+
+    /* INFO CARD */
+    .info-card {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 400px;
+    }
+
+    .info-content {
+        text-align: center;
+        padding: 40px;
+    }
+
+    .info-icon {
+        font-size: 80px;
+        margin-bottom: 24px;
+    }
+
+    .info-content h3 {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--dark);
+        margin: 0 0 12px 0;
+    }
+
+    .info-content p {
+        font-size: 16px;
+        color: var(--gray);
+        margin: 0;
+    }
+
+    /* LOADING */
+    .loading-screen {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 24px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .loading-spinner {
+        width: 60px;
+        height: 60px;
+        border: 6px solid rgba(255, 255, 255, 0.2);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    .spinner-sm {
+        width: 18px;
+        height: 18px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        display: inline-block;
+    }
+
+    @@keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    .loading-screen p {
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .license-badge {
+        padding: 4px 12px;
+        background: var(--primary);
+        color: white;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        margin-left: 8px;
+    }
+
+    /* RESPONSIVE */
+    @@media (max-width: 1200px) {
+        .dashboard-container {
+            grid-template-columns: 1fr;
+        }
+
+        .modern-sidebar {
+            display: none;
+        }
+
+        .content-layout {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .main-content {
+            padding: 16px;
+        }
+
+        .top-bar {
+            flex-direction: column;
+            gap: 16px;
+            align-items: stretch;
+        }
+
+        .top-bar-right {
+            flex-wrap: wrap;
+        }
+
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+
+        .vehicle-card-item {
+            grid-template-columns: 1fr;
+        }
+
+        .vehicle-icon {
+            justify-self: center;
+        }
+    }
+</style>
+
+@code {
+    // State
+    private bool isInitialized = false;
+    private bool isAuthenticated = false;
+    private bool isLoading = false;
+    private bool showNewRecordForm = false;
+    private string formMessage = string.Empty;
+    private bool formSuccess = false;
+
+    // User info
+    private string userEmail = string.Empty;
+    private string userRole = string.Empty;
+    private int currentUserId = 0;
+
+    // Data from database
+    private List<Vehicle>? vehicles;
+    private List<ServiceRecord>? serviceRecords;
+    private Vehicle? selectedVehicle;
+    private int selectedVehicleId = 0;
+
+    // Form model
+    private ServiceRecord newServiceRecord = new();
+
+    protected override void OnInitialized()
+    {
+        newServiceRecord = new ServiceRecord
+        {
+            ServiceDate = DateTime.Today,
+            ServiceType = ""
+        };
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await CheckAuthenticationAndLoadData();
+            StateHasChanged();
+        }
+    }
+
+    private async Task CheckAuthenticationAndLoadData()
+    {
+        try
+        {
+            var authStatus = await JSRuntime.InvokeAsync<string>("sessionStorage.getItem", "isAuthenticated");
+            
+            if (string.IsNullOrEmpty(authStatus) || authStatus != "true")
+            {
+                isAuthenticated = false;
+                isInitialized = true;
+                Navigation.NavigateTo("/login", forceLoad: true);
+                return;
+            }
+
+            userEmail = await JSRuntime.InvokeAsync<string>("sessionStorage.getItem", "userEmail") ?? "";
+            userRole = await JSRuntime.InvokeAsync<string>("sessionStorage.getItem", "userRole") ?? "owner";
+
+            isAuthenticated = true;
+            await LoadDataFromDatabase();
+            isInitialized = true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Auth error: {ex.Message}");
+            isAuthenticated = false;
+            isInitialized = true;
+            Navigation.NavigateTo("/login", forceLoad: true);
+        }
+    }
+
+    private async Task LoadDataFromDatabase()
+    {
+        try
+        {
+            var user = await DbContext.Users.FirstOrDefaultAsync(u => u.Email == userEmail);
+
+            if (user != null)
+            {
+                currentUserId = user.Id;
+
+                if (user.Role == UserRole.Owner)
+                {
+                    vehicles = await DbContext.Vehicles
+                        .Where(v => v.OwnerId == user.Id && v.IsActive)
+                        .Include(v => v.ServiceRecords)
+                        .OrderBy(v => v.Brand)
+                        .ThenBy(v => v.Model)
+                        .ToListAsync();
+                }
+                else if (user.Role == UserRole.Service)
+                {
+                    vehicles = await DbContext.Vehicles
+                        .Where(v => v.IsActive && v.ServicePermissions.Any(p => p.ServiceId == user.Id && p.IsActive))
+                        .Include(v => v.ServiceRecords)
+                        .Include(v => v.Owner)
+                        .OrderBy(v => v.Brand)
+                        .ThenBy(v => v.Model)
+                        .ToListAsync();
+                }
+                else if (user.Role == UserRole.Admin)
+                {
+                    vehicles = await DbContext.Vehicles
+                        .Where(v => v.IsActive)
+                        .Include(v => v.ServiceRecords)
+                        .Include(v => v.Owner)
+                        .OrderBy(v => v.Brand)
+                        .ThenBy(v => v.Model)
+                        .ToListAsync();
+                }
+
+                if (vehicles != null && vehicles.Any())
+                {
+                    await SelectVehicle(vehicles.First().Id);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Database error: {ex.Message}");
+            vehicles = new List<Vehicle>();
+        }
+    }
+
+    private async Task SelectVehicle(int vehicleId)
+    {
+        selectedVehicleId = vehicleId;
+        selectedVehicle = vehicles?.FirstOrDefault(v => v.Id == vehicleId);
+
+        if (selectedVehicle != null)
+        {
+            serviceRecords = await DbContext.ServiceRecords
+                .Where(sr => sr.VehicleId == vehicleId)
+                .Include(sr => sr.CreatedBy)
+                .OrderByDescending(sr => sr.ServiceDate)
+                .ToListAsync();
+
+            newServiceRecord.VehicleId = vehicleId;
+        }
+    }
+
+    private string GetRoleDisplayName()
+    {
+        return userRole switch
+        {
+            "admin" => "Administrátor",
+            "owner" => "Majiteľ",
+            "service" => "Servis",
+            _ => "Používateľ"
+        };
+    }
+
+    private string GetVehicleServiceStatus(Vehicle vehicle)
+    {
+        if (vehicle.ServiceRecords == null || !vehicle.ServiceRecords.Any())
+            return "Žiadny servis";
+
+        var lastService = vehicle.ServiceRecords.OrderByDescending(r => r.ServiceDate).FirstOrDefault();
+        if (lastService == null) return "Žiadny servis";
+
+        var daysSinceService = (DateTime.Today - lastService.ServiceDate).Days;
+        
+        if (daysSinceService < 180)
+            return "Aktuálny";
+        else if (daysSinceService < 365)
+            return "Blíži sa";
+        else
+            return "Potrebný";
+    }
+
+    private string GetStatusClass(Vehicle vehicle)
+    {
+        if (vehicle.ServiceRecords == null || !vehicle.ServiceRecords.Any())
+            return "danger";
+
+        var lastService = vehicle.ServiceRecords.OrderByDescending(r => r.ServiceDate).FirstOrDefault();
+        if (lastService == null) return "danger";
+
+        var daysSinceService = (DateTime.Today - lastService.ServiceDate).Days;
+        
+        if (daysSinceService < 180)
+            return "success";
+        else if (daysSinceService < 365)
+            return "warning";
+        else
+            return "danger";
+    }
+
+    private async Task SaveServiceRecord()
+    {
+        if (selectedVehicle == null)
+        {
+            formMessage = "Vyberte vozidlo pre pridanie záznamu.";
+            formSuccess = false;
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(newServiceRecord.Description))
+        {
+            formMessage = "Popis úkonu je povinný.";
+            formSuccess = false;
+            return;
+        }
+
+        isLoading = true;
+        formMessage = string.Empty;
+
+        try
+        {
+            newServiceRecord.VehicleId = selectedVehicle.Id;
+            newServiceRecord.CreatedById = currentUserId;
+            newServiceRecord.CreatedAt = DateTime.UtcNow;
+
+            DbContext.ServiceRecords.Add(newServiceRecord);
+            await DbContext.SaveChangesAsync();
+
+            formMessage = "Servisný záznam bol úspešne uložený!";
+            formSuccess = true;
+
+            await SelectVehicle(selectedVehicle.Id);
+            ClearForm();
+
+            _ = Task.Delay(3000).ContinueWith(_ =>
+            {
+                formMessage = string.Empty;
+                InvokeAsync(StateHasChanged);
+            });
+        }
+        catch (Exception ex)
+        {
+            formMessage = $"Chyba pri ukladaní: {ex.Message}";
+            formSuccess = false;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void ClearForm()
+    {
+        newServiceRecord = new ServiceRecord
+        {
+            ServiceDate = DateTime.Today,
+            ServiceType = "",
+            VehicleId = selectedVehicleId
+        };
+    }
+
+    private async Task ShowAddVehicleModal()
+    {
+        await JSRuntime.InvokeVoidAsync("alert", "Funkcia pridávania vozidiel bude dostupná v ďalšej verzii.");
+    }
+
+    private async Task ExportAllRecords()
+    {
+        await JSRuntime.InvokeVoidAsync("alert", "Export do PDF bude dostupný v ďalšej verzii.");
+    }
+
+    private async Task Logout()
+    {
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("sessionStorage.clear");
+        }
+        catch { }
+        
+        Navigation.NavigateTo("/", forceLoad: true);
+    }
+}
