@@ -1,77 +1,436 @@
 @page "/login"
+@layout EmptyLayout
 @rendermode InteractiveServer
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
 
-<PageTitle>Prihl·senie</PageTitle>
+<PageTitle>Prihl·senie - Servisn· kniûka</PageTitle>
 
-<div class="login-container">
-    <div class="login-card">
-        <div class="login-header">
-            <h1>Elektronick· servisn· kniûka</h1>
-            <p>Prihl·senie do systÈmu</p>
+<div class="login-page">
+    <!-- NAVIGATION -->
+    <nav class="nav-bar">
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <span class="logo-text">Servisn· Kniûka</span>
+            </a>
+            <div class="nav-links">
+                <a href="/" class="nav-link">Sp‰ù na domov</a>
+            </div>
         </div>
+    </nav>
 
-        <EditForm Model="loginModel" OnValidSubmit="HandleLogin" class="login-form">
-            <DataAnnotationsValidator />
-            
-            <div class="form-group">
-                <label for="email">E-mailov· adresa</label>
-                <InputText id="email" @bind-Value="loginModel.Email" class="form-control" placeholder="v·ö@email.sk" />
-                <ValidationMessage For="@(() => loginModel.Email)" />
-            </div>
-
-            <div class="form-group">
-                <label for="password">Heslo</label>
-                <InputText id="password" @bind-Value="loginModel.Password" type="password" class="form-control" placeholder="Zadajte heslo" />
-                <ValidationMessage For="@(() => loginModel.Password)" />
-            </div>
-
-            <div class="form-check">
-                <InputCheckbox id="remember" @bind-Value="loginModel.RememberMe" class="form-check-input" />
-                <label for="remember" class="form-check-label">
-                    Zapam‰taù si ma
-                </label>
-            </div>
-
-            @if (!string.IsNullOrEmpty(errorMessage))
-            {
-                <div class="alert alert-danger" role="alert">
-                    @errorMessage
+    <!-- LOGIN SECTION -->
+    <div class="login-section">
+        <div class="login-container">
+            <div class="login-card">
+                <div class="login-header">
+                    <h1>Vitajte sp‰ù</h1>
+                    <p>Prihl·ste sa do svojho ˙Ëtu</p>
                 </div>
-            }
 
-            <button type="submit" class="btn btn-primary btn-login" disabled="@isLoading">
-                @if (isLoading)
-                {
-                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                }
-                Prihl·siù sa
-            </button>
+                <EditForm Model="loginModel" OnValidSubmit="HandleLogin" class="login-form">
+                    <DataAnnotationsValidator />
+                    
+                    <div class="form-group">
+                        <label for="email">E-mailov· adresa</label>
+                        <div class="input-wrapper">
+                            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                <polyline points="22,6 12,13 2,6"></polyline>
+                            </svg>
+                            <InputText id="email" @bind-Value="loginModel.Email" class="form-control" placeholder="v·ö@email.sk" />
+                        </div>
+                        <ValidationMessage For="@(() => loginModel.Email)" class="validation-error" />
+                    </div>
 
-            <div class="login-links">
-                <a href="/register" class="text-decoration-none">Nem·te ˙Ëet? Registrujte sa</a>
-                <a href="/forgot-password" class="text-decoration-none">ZabudnutÈ heslo?</a>
+                    <div class="form-group">
+                        <label for="password">Heslo</label>
+                        <div class="input-wrapper">
+                            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                            <InputText id="password" @bind-Value="loginModel.Password" type="password" class="form-control" placeholder="ïïïïïïïï" />
+                        </div>
+                        <ValidationMessage For="@(() => loginModel.Password)" class="validation-error" />
+                    </div>
+
+                    <div class="form-options">
+                        <div class="form-check">
+                            <InputCheckbox id="remember" @bind-Value="loginModel.RememberMe" class="form-check-input" />
+                            <label for="remember" class="form-check-label">
+                                Zapam‰taù si ma
+                            </label>
+                        </div>
+                        <a href="/forgot-password" class="forgot-link">ZabudnutÈ heslo?</a>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <div class="alert-error">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                            <span>@errorMessage</span>
+                        </div>
+                    }
+
+                    <button type="submit" class="btn-login" disabled="@isLoading">
+                        @if (isLoading)
+                        {
+                            <span class="spinner"></span>
+                            <span>Prihlasovanie...</span>
+                        }
+                        else
+                        {
+                            <span>Prihl·siù sa</span>
+                            <span class="btn-arrow">?</span>
+                        }
+                    </button>
+                </EditForm>
             </div>
-
-            <!-- Zobrazenie testovacÌch ˙dajov -->
-            <div class="mt-4 p-3 bg-light rounded">
-                <small class="text-muted">
-                    <strong>Testovacie ˙Ëty:</strong><br/>
-                    <strong>Admin:</strong> admin@servis.sk / Admin123!<br/>
-                    <strong>Majiteæ:</strong> majitel@vozidlo.sk / Owner123!<br/>
-                    <strong>Servis:</strong> servis@autoservis.sk / Service123!
-                </small>
-            </div>
-        </EditForm>
-
-        <div class="login-footer">
-            <p class="text-muted">
-                BezpeËn˝ systÈm pre spr·vu servisn˝ch z·znamov vozidiel
-            </p>
         </div>
     </div>
 </div>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    .login-page {
+        min-height: 100vh;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .login-page::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: 
+            radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+        pointer-events: none;
+    }
+
+    /* NAVIGATION */
+    .nav-bar {
+        position: relative;
+        z-index: 10;
+        padding: 32px 0;
+    }
+
+    .nav-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .logo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: white;
+        font-size: 24px;
+        font-weight: 800;
+        text-decoration: none;
+        transition: opacity 0.3s ease;
+    }
+
+    .logo:hover {
+        opacity: 0.9;
+    }
+
+    .nav-links {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+    }
+
+    .nav-link {
+        color: white;
+        text-decoration: none;
+        font-weight: 500;
+        padding: 8px 16px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .nav-link:hover {
+        background: rgba(255, 255, 255, 0.15);
+    }
+
+    /* LOGIN SECTION */
+    .login-section {
+        position: relative;
+        z-index: 5;
+        min-height: calc(100vh - 100px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+    }
+
+    .login-container {
+        width: 100%;
+        max-width: 480px;
+    }
+
+    .login-card {
+        background: white;
+        border-radius: 32px;
+        padding: 48px;
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.2);
+        animation: fadeIn 0.5s ease;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .login-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .login-header h1 {
+        font-size: 32px;
+        font-weight: 900;
+        color: #1e293b;
+        margin-bottom: 8px;
+        letter-spacing: -0.02em;
+    }
+
+    .login-header p {
+        font-size: 16px;
+        color: #64748b;
+        font-weight: 400;
+    }
+
+    /* FORM */
+    .login-form {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .form-group label {
+        font-size: 14px;
+        font-weight: 600;
+        color: #334155;
+    }
+
+    .input-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 16px;
+        color: #94a3b8;
+        pointer-events: none;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 14px 16px 14px 48px;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 15px;
+        transition: all 0.3s ease;
+        font-family: inherit;
+        background: #f8fafc;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #667eea;
+        background: white;
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    }
+
+    .form-control::placeholder {
+        color: #94a3b8;
+    }
+
+    .validation-error {
+        color: #ef4444;
+        font-size: 13px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .form-options {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: -8px;
+    }
+
+    .form-check {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .form-check-input {
+        width: 18px;
+        height: 18px;
+        border: 2px solid #cbd5e1;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .form-check-input:checked {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-color: #667eea;
+    }
+
+    .form-check-label {
+        font-size: 14px;
+        color: #475569;
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .forgot-link {
+        font-size: 14px;
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.3s ease;
+    }
+
+    .forgot-link:hover {
+        color: #764ba2;
+    }
+
+    .alert-error {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 16px;
+        background: #fee2e2;
+        border: 1px solid #fecaca;
+        border-radius: 12px;
+        color: #991b1b;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    .alert-error svg {
+        flex-shrink: 0;
+    }
+
+    .btn-login {
+        width: 100%;
+        padding: 16px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        margin-top: 8px;
+    }
+
+    .btn-login:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-login:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+
+    .btn-arrow {
+        font-size: 20px;
+        transition: transform 0.3s ease;
+    }
+
+    .btn-login:hover:not(:disabled) .btn-arrow {
+        transform: translateX(4px);
+    }
+
+    .spinner {
+        width: 18px;
+        height: 18px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+    }
+
+    @@keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    /* RESPONSIVE */
+    @@media (max-width: 768px) {
+        .nav-container {
+            padding: 0 20px;
+        }
+
+        .login-card {
+            padding: 32px 24px;
+        }
+
+        .login-header h1 {
+            font-size: 28px;
+        }
+
+        .form-options {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .test-account-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+        }
+    }
+</style>
 
 @code {
     private LoginModel loginModel = new();
@@ -86,10 +445,8 @@
 
         try
         {
-            // Simulate authentication delay
             await Task.Delay(1000);
 
-            // ? OPRAVEN… HESL¡ - teraz zodpovedaj˙ datab·ze
             if (loginModel.Email == "admin@servis.sk" && loginModel.Password == "Admin123!")
             {
                 await JSRuntime.InvokeVoidAsync("sessionStorage.setItem", "isAuthenticated", "true");
