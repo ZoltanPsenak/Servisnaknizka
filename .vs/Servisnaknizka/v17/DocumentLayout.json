@@ -3,6 +3,18 @@
   "WorkspaceRootPath": "C:\\Users\\Zoltan Psenak\\source\\repos\\Servisnaknizka\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{FBC358B1-B091-4116-844E-05475A8DDBE5}|Servisnaknizka\\Servisnaknizka.csproj|c:\\users\\zoltan psenak\\source\\repos\\servisnaknizka\\servisnaknizka\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{FBC358B1-B091-4116-844E-05475A8DDBE5}|Servisnaknizka\\Servisnaknizka.csproj|solutionrelative:servisnaknizka\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FBC358B1-B091-4116-844E-05475A8DDBE5}|Servisnaknizka\\Servisnaknizka.csproj|c:\\users\\zoltan psenak\\source\\repos\\servisnaknizka\\servisnaknizka\\data\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FBC358B1-B091-4116-844E-05475A8DDBE5}|Servisnaknizka\\Servisnaknizka.csproj|solutionrelative:servisnaknizka\\data\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FBC358B1-B091-4116-844E-05475A8DDBE5}|Servisnaknizka\\Servisnaknizka.csproj|c:\\users\\zoltan psenak\\source\\repos\\servisnaknizka\\servisnaknizka\\components\\pages\\login.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{FBC358B1-B091-4116-844E-05475A8DDBE5}|Servisnaknizka\\Servisnaknizka.csproj|solutionrelative:servisnaknizka\\components\\pages\\login.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{FBC358B1-B091-4116-844E-05475A8DDBE5}|Servisnaknizka\\Servisnaknizka.csproj|c:\\users\\zoltan psenak\\source\\repos\\servisnaknizka\\servisnaknizka\\components\\pages\\dashboard.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{FBC358B1-B091-4116-844E-05475A8DDBE5}|Servisnaknizka\\Servisnaknizka.csproj|solutionrelative:servisnaknizka\\components\\pages\\dashboard.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
@@ -19,16 +31,8 @@
       "RelativeMoniker": "D:0:0:{FBC358B1-B091-4116-844E-05475A8DDBE5}|Servisnaknizka\\Servisnaknizka.csproj|solutionrelative:servisnaknizka\\components\\_imports.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{FBC358B1-B091-4116-844E-05475A8DDBE5}|Servisnaknizka\\Servisnaknizka.csproj|c:\\users\\zoltan psenak\\source\\repos\\servisnaknizka\\servisnaknizka\\components\\pages\\login.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{FBC358B1-B091-4116-844E-05475A8DDBE5}|Servisnaknizka\\Servisnaknizka.csproj|solutionrelative:servisnaknizka\\components\\pages\\login.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{FBC358B1-B091-4116-844E-05475A8DDBE5}|Servisnaknizka\\Servisnaknizka.csproj|c:\\users\\zoltan psenak\\source\\repos\\servisnaknizka\\servisnaknizka\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{FBC358B1-B091-4116-844E-05475A8DDBE5}|Servisnaknizka\\Servisnaknizka.csproj|solutionrelative:servisnaknizka\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{FBC358B1-B091-4116-844E-05475A8DDBE5}|Servisnaknizka\\Servisnaknizka.csproj|c:\\users\\zoltan psenak\\source\\repos\\servisnaknizka\\servisnaknizka\\data\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{FBC358B1-B091-4116-844E-05475A8DDBE5}|Servisnaknizka\\Servisnaknizka.csproj|solutionrelative:servisnaknizka\\data\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{FBC358B1-B091-4116-844E-05475A8DDBE5}|Servisnaknizka\\Servisnaknizka.csproj|c:\\users\\zoltan psenak\\source\\repos\\servisnaknizka\\servisnaknizka\\services\\ivehicleservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -78,11 +82,24 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 0,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
+              "Title": "appsettings.Development.json",
+              "DocumentMoniker": "C:\\Users\\Zoltan Psenak\\source\\repos\\Servisnaknizka\\Servisnaknizka\\appsettings.Development.json",
+              "RelativeDocumentMoniker": "Servisnaknizka\\appsettings.Development.json",
+              "ToolTip": "C:\\Users\\Zoltan Psenak\\source\\repos\\Servisnaknizka\\Servisnaknizka\\appsettings.Development.json",
+              "RelativeToolTip": "Servisnaknizka\\appsettings.Development.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-01-27T21:23:26.797Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
               "Title": "EmptyLayout.razor",
               "DocumentMoniker": "C:\\Users\\Zoltan Psenak\\source\\repos\\Servisnaknizka\\Servisnaknizka\\Components\\Layout\\EmptyLayout.razor",
               "RelativeDocumentMoniker": "Servisnaknizka\\Components\\Layout\\EmptyLayout.razor",
@@ -94,32 +111,33 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 3,
               "Title": "Dashboard.razor",
               "DocumentMoniker": "C:\\Users\\Zoltan Psenak\\source\\repos\\Servisnaknizka\\Servisnaknizka\\Components\\Pages\\Dashboard.razor",
               "RelativeDocumentMoniker": "Servisnaknizka\\Components\\Pages\\Dashboard.razor",
               "ToolTip": "C:\\Users\\Zoltan Psenak\\source\\repos\\Servisnaknizka\\Servisnaknizka\\Components\\Pages\\Dashboard.razor",
               "RelativeToolTip": "Servisnaknizka\\Components\\Pages\\Dashboard.razor",
-              "ViewState": "AgIAAKcAAAAAAAAAAAAUwLkAAAAoAAAAAAAAAA==",
+              "ViewState": "AgIAACYAAAAAAAAAAAAUwLkAAAAoAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2026-01-24T15:02:23.625Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 1,
               "Title": "ApplicationDbContext.cs",
               "DocumentMoniker": "C:\\Users\\Zoltan Psenak\\source\\repos\\Servisnaknizka\\Servisnaknizka\\Data\\ApplicationDbContext.cs",
               "RelativeDocumentMoniker": "Servisnaknizka\\Data\\ApplicationDbContext.cs",
               "ToolTip": "C:\\Users\\Zoltan Psenak\\source\\repos\\Servisnaknizka\\Servisnaknizka\\Data\\ApplicationDbContext.cs",
               "RelativeToolTip": "Servisnaknizka\\Data\\ApplicationDbContext.cs",
-              "ViewState": "AgIAAKAAAAAAAAAAAAAAAMcAAAABAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAMcAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-24T14:20:37.748Z"
+              "WhenOpened": "2026-01-24T14:20:37.748Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 12,
               "Title": "Permission.cs",
               "DocumentMoniker": "C:\\Users\\Zoltan Psenak\\source\\repos\\Servisnaknizka\\Servisnaknizka\\Models\\Permission.cs",
               "RelativeDocumentMoniker": "Servisnaknizka\\Models\\Permission.cs",
@@ -131,7 +149,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 13,
               "Title": "ServiceRecord.cs",
               "DocumentMoniker": "C:\\Users\\Zoltan Psenak\\source\\repos\\Servisnaknizka\\Servisnaknizka\\Models\\ServiceRecord.cs",
               "RelativeDocumentMoniker": "Servisnaknizka\\Models\\ServiceRecord.cs",
@@ -143,7 +161,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 14,
               "Title": "Vehicle.cs",
               "DocumentMoniker": "C:\\Users\\Zoltan Psenak\\source\\repos\\Servisnaknizka\\Servisnaknizka\\Models\\Vehicle.cs",
               "RelativeDocumentMoniker": "Servisnaknizka\\Models\\Vehicle.cs",
@@ -155,7 +173,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 15,
               "Title": "User.cs",
               "DocumentMoniker": "C:\\Users\\Zoltan Psenak\\source\\repos\\Servisnaknizka\\Servisnaknizka\\Models\\User.cs",
               "RelativeDocumentMoniker": "Servisnaknizka\\Models\\User.cs",
@@ -167,7 +185,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 6,
               "Title": "_Imports.razor",
               "DocumentMoniker": "C:\\Users\\Zoltan Psenak\\source\\repos\\Servisnaknizka\\Servisnaknizka\\Components\\_Imports.razor",
               "RelativeDocumentMoniker": "Servisnaknizka\\Components\\_Imports.razor",
@@ -179,19 +197,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 2,
               "Title": "Login.razor",
               "DocumentMoniker": "C:\\Users\\Zoltan Psenak\\source\\repos\\Servisnaknizka\\Servisnaknizka\\Components\\Pages\\Login.razor",
               "RelativeDocumentMoniker": "Servisnaknizka\\Components\\Pages\\Login.razor",
               "ToolTip": "C:\\Users\\Zoltan Psenak\\source\\repos\\Servisnaknizka\\Servisnaknizka\\Components\\Pages\\Login.razor",
               "RelativeToolTip": "Servisnaknizka\\Components\\Pages\\Login.razor",
-              "ViewState": "AgIAAA4AAAAAAAAAAAAAACQAAAA1AAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACQAAAA1AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-01-24T14:16:58.907Z"
+              "WhenOpened": "2026-01-24T14:16:58.907Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 5,
               "Title": "app.css",
               "DocumentMoniker": "C:\\Users\\Zoltan Psenak\\source\\repos\\Servisnaknizka\\Servisnaknizka\\wwwroot\\app.css",
               "RelativeDocumentMoniker": "Servisnaknizka\\wwwroot\\app.css",
@@ -203,7 +222,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 8,
               "Title": "IVehicleService.cs",
               "DocumentMoniker": "C:\\Users\\Zoltan Psenak\\source\\repos\\Servisnaknizka\\Servisnaknizka\\Services\\IVehicleService.cs",
               "RelativeDocumentMoniker": "Servisnaknizka\\Services\\IVehicleService.cs",
@@ -215,7 +234,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 9,
               "Title": "VehicleService.cs",
               "DocumentMoniker": "C:\\Users\\Zoltan Psenak\\source\\repos\\Servisnaknizka\\Servisnaknizka\\Services\\VehicleService.cs",
               "RelativeDocumentMoniker": "Servisnaknizka\\Services\\VehicleService.cs",
@@ -227,7 +246,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 7,
               "Title": "appsettings.json",
               "DocumentMoniker": "C:\\Users\\Zoltan Psenak\\source\\repos\\Servisnaknizka\\Servisnaknizka\\appsettings.json",
               "RelativeDocumentMoniker": "Servisnaknizka\\appsettings.json",
@@ -239,7 +258,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 10,
               "Title": "Servisnaknizka.csproj",
               "DocumentMoniker": "C:\\Users\\Zoltan Psenak\\source\\repos\\Servisnaknizka\\Servisnaknizka\\Servisnaknizka.csproj",
               "RelativeDocumentMoniker": "Servisnaknizka\\Servisnaknizka.csproj",
@@ -251,7 +270,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 11,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\Zoltan Psenak\\source\\repos\\Servisnaknizka\\Servisnaknizka\\Program.cs",
               "RelativeDocumentMoniker": "Servisnaknizka\\Program.cs",
@@ -263,7 +282,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 16,
               "Title": "App.razor",
               "DocumentMoniker": "C:\\Users\\Zoltan Psenak\\source\\repos\\Servisnaknizka\\Servisnaknizka\\Components\\App.razor",
               "RelativeDocumentMoniker": "Servisnaknizka\\Components\\App.razor",
@@ -275,7 +294,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 16,
+              "DocumentIndex": 17,
               "Title": "Home.razor",
               "DocumentMoniker": "C:\\Users\\Zoltan Psenak\\source\\repos\\Servisnaknizka\\Servisnaknizka\\Components\\Pages\\Home.razor",
               "RelativeDocumentMoniker": "Servisnaknizka\\Components\\Pages\\Home.razor",
