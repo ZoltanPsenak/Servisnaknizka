@@ -7,675 +7,127 @@
 
 <PageTitle>Prihlásenie - Servisná knižka</PageTitle>
 
-<div class="login-page">
-    <!-- NAVIGATION -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <a href="/" class="logo">
-                <span class="logo-text">Servisná Knižka</span>
-            </a>
-            <div class="nav-links">
-                <a href="/" class="nav-link">← Späť na domov</a>
-            </div>
-        </div>
-    </nav>
+<div class="lg">
+    <div class="lg-bg">
+        <div class="lg-orb lg-orb-1"></div>
+        <div class="lg-orb lg-orb-2"></div>
+    </div>
 
-    <!-- LOGIN SECTION -->
-    <div class="login-section">
-        <div class="login-container">
-            <!-- Left Side - Illustration -->
-            <div class="login-illustration">
-                <div class="illustration-content">
-                    <div class="floating-card card-1">
-                        <div class="card-icon">🚗</div>
-                        <div class="card-text">
-                            <div class="card-title">Vaše vozidlá</div>
-                            <div class="card-subtitle">Kompletný prehľad</div>
-                        </div>
-                    </div>
-                    <div class="floating-card card-2">
-                        <div class="card-icon">📋</div>
-                        <div class="card-text">
-                            <div class="card-title">História servisov</div>
-                            <div class="card-subtitle">Vždy po ruke</div>
-                        </div>
-                    </div>
-                    <div class="floating-card card-3">
-                        <div class="card-icon">🔔</div>
-                        <div class="card-text">
-                            <div class="card-title">Pripomienky</div>
-                            <div class="card-subtitle">Automatické</div>
-                        </div>
-                    </div>
-                    <div class="illustration-bg">
-                        <div class="bg-circle circle-1"></div>
-                        <div class="bg-circle circle-2"></div>
-                        <div class="bg-circle circle-3"></div>
+    <div class="lg-center">
+        <div class="lg-card">
+            <a href="/" class="lg-logo">Servisná Knižka</a>
+            <h1>Prihlásenie</h1>
+            <p class="lg-sub">Zadajte svoje údaje pre prístup do systému</p>
+
+            @if (!string.IsNullOrEmpty(successMessage))
+            {
+                <div class="lg-msg lg-msg-ok">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                    @successMessage
+                </div>
+            }
+
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="lg-msg lg-msg-err">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    @errorMessage
+                </div>
+            }
+
+            <form method="post" action="/api/auth/login" class="lg-form">
+                <input type="hidden" name="returnUrl" value="/dashboard" />
+
+                <div class="lg-field">
+                    <label for="email">E-mailová adresa</label>
+                    <div class="lg-input-wrap">
+                        <svg class="lg-input-ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        <input type="email" id="email" name="email" placeholder="vas@email.sk" required />
                     </div>
                 </div>
-            </div>
 
-            <!-- Right Side - Login Form -->
-            <div class="login-form-wrapper">
-                <div class="login-card">
-                    <div class="login-header">
-                        <h1>Vitajte späť! 👋</h1>
-                        <p>Prihláste sa do svojho účtu a pokračujte v správe vozidiel</p>
-                    </div>
-
-                    <!-- ✅ ZMENA: Použiť HTML form s POST namiesto EditForm -->
-                    <form method="post" action="/api/auth/login" class="login-form">
-                        <input type="hidden" name="returnUrl" value="/dashboard" />
-                        
-                        <div class="form-group">
-                            <label for="email">E-mailová adresa</label>
-                            <div class="input-wrapper">
-                                <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                                    <polyline points="22,6 12,13 2,6"></polyline>
-                                </svg>
-                                <input type="email" id="email" name="email" class="form-control" placeholder="vas@email.sk" required />
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="password">Heslo</label>
-                            <div class="input-wrapper">
-                                <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                                </svg>
-                                <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required />
-                            </div>
-                        </div>
-
-                        <div class="form-options">
-                            <div class="form-check">
-                                <input type="checkbox" id="remember" name="rememberMe" class="form-check-input" value="true" />
-                                <label for="remember" class="form-check-label">
-                                    Zapamätať si ma
-                                </label>
-                            </div>
-                            <a href="/forgot-password" class="forgot-link">Zabudnuté heslo?</a>
-                        </div>
-
-                        @if (!string.IsNullOrEmpty(successMessage))
-                        {
-                            <div class="alert-success">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-                                <span>@successMessage</span>
-                            </div>
-                        }
-
-                        @if (!string.IsNullOrEmpty(errorMessage))
-                        {
-                            <div class="alert-error">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="12" cy="12" r="10"></circle>
-                                    <line x1="12" y1="8" x2="12" y2="12"></line>
-                                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                                </svg>
-                                <span>@errorMessage</span>
-                            </div>
-                        }
-
-                        <button type="submit" class="btn-login">
-                            <span>Prihlásiť sa</span>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M5 12h14M12 5l7 7-7 7"/>
-                            </svg>
-                        </button>
-                    </form>
-
-                    <div class="register-link">
-                        <span>Nemáte účet?</span>
-                        <a href="/register">Zaregistrujte sa</a>
+                <div class="lg-field">
+                    <label for="password">Heslo</label>
+                    <div class="lg-input-wrap">
+                        <svg class="lg-input-ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                        <input type="password" id="password" name="password" placeholder="Vaše heslo" required />
                     </div>
                 </div>
+
+                <div class="lg-row">
+                    <label class="lg-check">
+                        <input type="checkbox" name="rememberMe" value="true" />
+                        <span>Zapamätať si ma</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="lg-btn">Prihlásiť sa</button>
+            </form>
+
+            <div class="lg-footer">
+                <span>Nemáte účet?</span>
+                <a href="/register">Zaregistrujte sa</a>
             </div>
         </div>
     </div>
 </div>
 
 <style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--p:#2563eb;--pd:#1d4ed8;--s:#0ea5e9;--d:#0f172a;--g:#64748b;--l:#f1f5f9;--w:#fff;--r:14px}
 
-    :root {
-        --primary: #2563eb;
-        --primary-dark: #1d4ed8;
-        --secondary: #0ea5e9;
-        --blue: #3b82f6;
-        --purple: #8b5cf6;
-        --green: #22c55e;
-        --orange: #f97316;
-        --red: #ef4444;
-        --cyan: #06b6d4;
-        --dark: #0f172a;
-        --gray: #64748b;
-        --light: #f1f5f9;
-        --white: #ffffff;
-    }
+    .lg{min-height:100vh;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:linear-gradient(145deg,#1e3a8a 0%,#2563eb 50%,#0ea5e9 100%);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
 
-    .login-page {
-        min-height: 100vh;
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        background: linear-gradient(135deg, #1e40af 0%, #0ea5e9 100%);
-        position: relative;
-        overflow: hidden;
-    }
+    .lg-bg{position:absolute;inset:0;pointer-events:none}
+    .lg-orb{position:absolute;border-radius:50%;filter:blur(100px);opacity:.2}
+    .lg-orb-1{width:500px;height:500px;background:#06b6d4;top:-200px;right:-100px;animation:orb 20s ease-in-out infinite}
+    .lg-orb-2{width:400px;height:400px;background:#3b82f6;bottom:-150px;left:-80px;animation:orb 24s ease-in-out infinite reverse}
+    @@keyframes orb{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,-30px)}}
 
-    .login-page::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: 
-            radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-            radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
-        pointer-events: none;
-    }
+    .lg-center{position:relative;z-index:1;width:100%;max-width:420px;padding:24px}
 
-    /* NAVIGATION */
-    .navbar {
-        position: relative;
-        z-index: 10;
-        padding: 24px 0;
-    }
+    .lg-card{background:var(--w);border-radius:24px;padding:40px 36px;box-shadow:0 30px 80px rgba(0,0,0,.2);animation:fadeIn .5s ease}
+    @@keyframes fadeIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 
-    .nav-container {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 0 40px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
+    .lg-logo{display:block;text-align:center;font-size:15px;font-weight:800;color:var(--p);text-decoration:none;letter-spacing:-.02em;margin-bottom:28px}
 
-    .logo {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        color: white;
-        font-size: 22px;
-        font-weight: 800;
-        text-decoration: none;
-        transition: opacity 0.3s ease;
-    }
+    .lg-card h1{font-size:26px;font-weight:900;color:var(--d);text-align:center;letter-spacing:-.02em;margin-bottom:6px}
+    .lg-sub{text-align:center;font-size:14px;color:var(--g);margin-bottom:28px}
 
-    .logo:hover {
-        opacity: 0.9;
-    }
+    /* Messages */
+    .lg-msg{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;font-size:13px;font-weight:500;margin-bottom:20px}
+    .lg-msg-ok{background:#dcfce7;color:#166534;border:1px solid #bbf7d0}
+    .lg-msg-err{background:#fee2e2;color:#991b1b;border:1px solid #fecaca}
+    .lg-msg svg{flex-shrink:0}
 
-    .nav-links {
-        display: flex;
-        gap: 16px;
-        align-items: center;
-    }
+    /* Form */
+    .lg-form{display:flex;flex-direction:column;gap:18px}
 
-    .nav-link {
-        color: white;
-        text-decoration: none;
-        font-weight: 500;
-        font-size: 15px;
-        padding: 10px 20px;
-        border-radius: 10px;
-        transition: all 0.3s ease;
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-    }
+    .lg-field{display:flex;flex-direction:column;gap:6px}
+    .lg-field label{font-size:13px;font-weight:600;color:var(--d)}
 
-    .nav-link:hover {
-        background: rgba(255, 255, 255, 0.2);
-        transform: translateX(-4px);
-    }
+    .lg-input-wrap{position:relative;display:flex;align-items:center}
+    .lg-input-ic{position:absolute;left:14px;color:#94a3b8;pointer-events:none}
+    .lg-input-wrap input{width:100%;padding:13px 14px 13px 44px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;font-family:inherit;background:var(--l);transition:all .2s}
+    .lg-input-wrap input:focus{outline:none;border-color:var(--p);background:var(--w);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+    .lg-input-wrap input::placeholder{color:#94a3b8}
 
-    /* LOGIN SECTION */
-    .login-section {
-        position: relative;
-        z-index: 5;
-        min-height: calc(100vh - 100px);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 40px 20px;
-    }
+    .lg-row{display:flex;justify-content:space-between;align-items:center}
+    .lg-check{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--g);cursor:pointer;user-select:none}
+    .lg-check input{width:16px;height:16px;border-radius:4px;cursor:pointer;accent-color:var(--p)}
 
-    .login-container {
-        width: 100%;
-        max-width: 1200px;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 60px;
-        align-items: center;
-    }
+    .lg-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--p),var(--s));color:var(--w);border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;transition:all .25s;box-shadow:0 8px 24px rgba(37,99,235,.3);font-family:inherit;margin-top:4px}
+    .lg-btn:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(37,99,235,.4)}
+    .lg-btn:active{transform:translateY(0)}
 
-    /* ILLUSTRATION */
-    .login-illustration {
-        position: relative;
-        height: 600px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
+    .lg-footer{text-align:center;margin-top:24px;font-size:13px;color:var(--g)}
+    .lg-footer a{color:var(--p);font-weight:600;text-decoration:none;margin-left:3px}
+    .lg-footer a:hover{text-decoration:underline}
 
-    .illustration-content {
-        position: relative;
-        width: 100%;
-        height: 100%;
-    }
-
-    .illustration-bg {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 100%;
-        height: 100%;
-    }
-
-    .bg-circle {
-        position: absolute;
-        border-radius: 50%;
-        filter: blur(60px);
-        opacity: 0.3;
-    }
-
-    .circle-1 {
-        width: 300px;
-        height: 300px;
-        background: #06b6d4;
-        top: 10%;
-        left: 10%;
-        animation: float 15s infinite ease-in-out;
-    }
-
-    .circle-2 {
-        width: 250px;
-        height: 250px;
-        background: #3b82f6;
-        bottom: 20%;
-        right: 10%;
-        animation: float 20s infinite ease-in-out -5s;
-    }
-
-    .circle-3 {
-        width: 200px;
-        height: 200px;
-        background: #22c55e;
-        top: 50%;
-        left: 50%;
-        animation: float 18s infinite ease-in-out -10s;
-    }
-
-    @@keyframes float {
-        0%, 100% { transform: translate(0, 0) rotate(0deg); }
-        33% { transform: translate(20px, -20px) rotate(5deg); }
-        66% { transform: translate(-15px, 15px) rotate(-5deg); }
-    }
-
-    .floating-card {
-        position: absolute;
-        background: white;
-        border-radius: 16px;
-        padding: 20px;
-        display: flex;
-        align-items: center;
-        gap: 16px;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-        animation: cardFloat 6s infinite ease-in-out;
-    }
-
-    .card-1 {
-        top: 15%;
-        left: 10%;
-        animation-delay: 0s;
-    }
-
-    .card-2 {
-        top: 45%;
-        right: 5%;
-        animation-delay: -2s;
-    }
-
-    .card-3 {
-        bottom: 20%;
-        left: 15%;
-        animation-delay: -4s;
-    }
-
-    @@keyframes cardFloat {
-        0%, 100% { transform: translateY(0px); }
-        50% { transform: translateY(-20px); }
-    }
-
-    .card-icon {
-        width: 56px;
-        height: 56px;
-        background: linear-gradient(135deg, var(--primary), var(--secondary));
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 28px;
-        flex-shrink: 0;
-    }
-
-    .card-text {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-    }
-
-    .card-title {
-        font-size: 15px;
-        font-weight: 700;
-        color: var(--dark);
-    }
-
-    .card-subtitle {
-        font-size: 13px;
-        color: var(--gray);
-    }
-
-    /* LOGIN FORM */
-    .login-form-wrapper {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .login-card {
-        background: white;
-        border-radius: 32px;
-        padding: 48px;
-        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.2);
-        width: 100%;
-        max-width: 500px;
-        animation: slideIn 0.6s ease;
-    }
-
-    @@keyframes slideIn {
-        from {
-            opacity: 0;
-            transform: translateX(30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateX(0);
-        }
-    }
-
-    .login-header {
-        margin-bottom: 40px;
-    }
-
-    .login-header h1 {
-        font-size: 32px;
-        font-weight: 900;
-        color: var(--dark);
-        margin-bottom: 12px;
-        letter-spacing: -0.02em;
-    }
-
-    .login-header p {
-        font-size: 16px;
-        color: var(--gray);
-        line-height: 1.6;
-    }
-
-    /* FORM */
-    .login-form {
-        display: flex;
-        flex-direction: column;
-        gap: 24px;
-    }
-
-    .form-group {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-    }
-
-    .form-group label {
-        font-size: 14px;
-        font-weight: 600;
-        color: var(--dark);
-    }
-
-    .input-wrapper {
-        position: relative;
-        display: flex;
-        align-items: center;
-    }
-
-    .input-icon {
-        position: absolute;
-        left: 16px;
-        color: var(--gray);
-        pointer-events: none;
-        z-index: 1;
-    }
-
-    .form-control {
-        width: 100%;
-        padding: 14px 16px 14px 48px;
-        border: 2px solid #e2e8f0;
-        border-radius: 12px;
-        font-size: 15px;
-        transition: all 0.3s ease;
-        font-family: inherit;
-        background: var(--light);
-    }
-
-    .form-control:focus {
-        outline: none;
-        border-color: var(--primary);
-        background: white;
-        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
-    }
-
-    .form-control::placeholder {
-        color: #94a3b8;
-    }
-
-    .validation-error {
-        color: var(--red);
-        font-size: 13px;
-        font-weight: 500;
-        display: flex;
-        align-items: center;
-        gap: 4px;
-    }
-
-    .form-options {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: -8px;
-    }
-
-    .form-check {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .form-check-input {
-        width: 18px;
-        height: 18px;
-        border: 2px solid #cbd5e1;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .form-check-input:checked {
-        background: linear-gradient(135deg, var(--primary), var(--secondary));
-        border-color: var(--primary);
-    }
-
-    .form-check-label {
-        font-size: 14px;
-        color: var(--gray);
-        cursor: pointer;
-        user-select: none;
-    }
-
-    .forgot-link {
-        font-size: 14px;
-        color: var(--primary);
-        text-decoration: none;
-        font-weight: 600;
-        transition: color 0.3s ease;
-    }
-
-    .forgot-link:hover {
-        color: var(--primary-dark);
-    }
-
-    .alert-success {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 14px 16px;
-        background: #dcfce7;
-        border: 1px solid #bbf7d0;
-        border-radius: 12px;
-        color: #166534;
-        font-size: 14px;
-        font-weight: 500;
-    }
-
-    .alert-success svg {
-        flex-shrink: 0;
-    }
-
-    .alert-error {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 14px 16px;
-        background: #fee2e2;
-        border: 1px solid #fecaca;
-        border-radius: 12px;
-        color: #991b1b;
-        font-size: 14px;
-        font-weight: 500;
-    }
-
-    .alert-error svg {
-        flex-shrink: 0;
-    }
-
-    .register-link {
-        text-align: center;
-        margin-top: 20px;
-        font-size: 14px;
-        color: var(--gray);
-    }
-
-    .register-link a {
-        color: var(--primary);
-        font-weight: 600;
-        text-decoration: none;
-        margin-left: 4px;
-    }
-
-    .register-link a:hover {
-        text-decoration: underline;
-    }
-
-    .btn-login {
-        width: 100%;
-        padding: 16px 24px;
-        background: linear-gradient(135deg, var(--primary), var(--secondary));
-        color: white;
-        border: none;
-        border-radius: 12px;
-        font-size: 16px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        box-shadow: 0 10px 30px rgba(37, 99, 235, 0.3);
-        margin-top: 8px;
-    }
-
-    .btn-login:hover:not(:disabled) {
-        transform: translateY(-2px);
-        box-shadow: 0 15px 40px rgba(37, 99, 235, 0.4);
-    }
-
-    .btn-login:active:not(:disabled) {
-        transform: translateY(0);
-    }
-
-    .btn-login:disabled {
-        opacity: 0.7;
-        cursor: not-allowed;
-    }
-
-    .spinner {
-        width: 18px;
-        height: 18px;
-        border: 2px solid rgba(255, 255, 255, 0.3);
-        border-top-color: white;
-        border-radius: 50%;
-        animation: spin 0.8s linear infinite;
-    }
-
-    @@keyframes spin {
-        to { transform: rotate(360deg); }
-    }
-
-    /* RESPONSIVE */
-    @@media (max-width: 1024px) {
-        .login-container {
-            grid-template-columns: 1fr;
-            gap: 40px;
-        }
-
-        .login-illustration {
-            display: none;
-        }
-
-        .login-card {
-            max-width: 550px;
-            margin: 0 auto;
-        }
-    }
-
-    @@media (max-width: 768px) {
-        .nav-container {
-            padding: 0 20px;
-        }
-
-        .login-card {
-            padding: 32px 24px;
-        }
-
-        .login-header h1 {
-            font-size: 28px;
-        }
-
-        .login-header p {
-            font-size: 15px;
-        }
-
-        .form-options {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 12px;
-        }
+    @@media(max-width:480px){
+        .lg-center{padding:16px}
+        .lg-card{padding:28px 22px;border-radius:20px}
+        .lg-card h1{font-size:22px}
     }
 </style>
 

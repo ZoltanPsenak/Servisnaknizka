@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 namespace Servisnaknizka.Models
 {
     /// <summary>
-    /// Používate¾ systému - rozširuje IdentityUser o rolu
+    /// Pouï¿½ï¿½vateï¿½ systï¿½mu - rozï¿½iruje IdentityUser o rolu
     /// </summary>
     public class User : IdentityUser<int>
     {
@@ -23,21 +23,24 @@ namespace Servisnaknizka.Models
 
         public bool IsActive { get; set; } = true;
 
-        // Navigaèné vlastnosti
+        // Navigaï¿½nï¿½ vlastnosti
         public virtual ICollection<Vehicle> OwnedVehicles { get; set; } = new List<Vehicle>();
         public virtual ICollection<Permission> ServicePermissions { get; set; } = new List<Permission>();
         public virtual ICollection<ServiceRecord> CreatedServiceRecords { get; set; } = new List<ServiceRecord>();
-
+        /// <summary>
+        /// ServisnÃ¡ prevÃ¡dzka prislÃºchajÃºca tomuto pouÅ¾Ã­vateÄ¾ovi (ak mÃ¡ rolu Service)
+        /// </summary>
+        public virtual Service? ServiceProfile { get; set; }
         public string FullName => $"{FirstName} {LastName}";
     }
 
     /// <summary>
-    /// Roly používate¾ov v systéme
+    /// Roly pouï¿½ï¿½vateï¿½ov v systï¿½me
     /// </summary>
     public enum UserRole
     {
-        Owner = 1,      // Majite¾ vozidla
+        Owner = 1,      // Majiteï¿½ vozidla
         Service = 2,    // Autoservis
-        Admin = 3       // Administrátor
+        Admin = 3       // Administrï¿½tor
     }
 }

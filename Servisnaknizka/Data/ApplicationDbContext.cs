@@ -6,7 +6,7 @@ using Servisnaknizka.Models;
 namespace Servisnaknizka.Data
 {
     /// <summary>
-    /// Hlavnı databázovı kontext pre SQL Server
+    /// Hlavnï¿½ databï¿½zovï¿½ kontext pre SQL Server
     /// </summary>
     public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<int>, int>
     {
@@ -14,16 +14,15 @@ namespace Servisnaknizka.Data
         {
         }
 
-        // DbSet pre naše entity
+        // DbSet pre naï¿½e entity
         public DbSet<Vehicle> Vehicles { get; set; }
         public DbSet<ServiceRecord> ServiceRecords { get; set; }
-        public DbSet<Permission> Permissions { get; set; }
-
+        public DbSet<Permission> Permissions { get; set; }        public DbSet<Service> Services { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
-            // Konfigurácia tabuliek Identity s vlastnımi názvami
+            // Konfigurï¿½cia tabuliek Identity s vlastnï¿½mi nï¿½zvami
             builder.Entity<User>().ToTable("Users");
             builder.Entity<IdentityRole<int>>().ToTable("Roles");
             builder.Entity<IdentityUserRole<int>>().ToTable("UserRoles");
@@ -32,7 +31,7 @@ namespace Servisnaknizka.Data
             builder.Entity<IdentityRoleClaim<int>>().ToTable("RoleClaims");
             builder.Entity<IdentityUserToken<int>>().ToTable("UserTokens");
 
-            // SQL Server špecifické nastavenia pre User
+            // SQL Server ï¿½pecifickï¿½ nastavenia pre User
             builder.Entity<User>(entity =>
             {
                 entity.Property(u => u.FirstName)
@@ -56,7 +55,7 @@ namespace Servisnaknizka.Data
                 entity.HasIndex(u => u.Email).IsUnique();
             });
 
-            // SQL Server špecifické nastavenia pre Vehicle
+            // SQL Server ï¿½pecifickï¿½ nastavenia pre Vehicle
             builder.Entity<Vehicle>(entity =>
             {
                 entity.Property(v => v.VIN)
@@ -96,7 +95,7 @@ namespace Servisnaknizka.Data
                 entity.HasIndex(v => new { v.OwnerId, v.IsActive });
             });
 
-            // SQL Server špecifické nastavenia pre ServiceRecord
+            // SQL Server ï¿½pecifickï¿½ nastavenia pre ServiceRecord
             builder.Entity<ServiceRecord>(entity =>
             {
                 entity.Property(sr => sr.Description)
@@ -130,7 +129,7 @@ namespace Servisnaknizka.Data
                 entity.HasIndex(sr => sr.CreatedById);
             });
 
-            // SQL Server špecifické nastavenia pre Permission
+            // SQL Server ï¿½pecifickï¿½ nastavenia pre Permission
             builder.Entity<Permission>(entity =>
             {
                 entity.Property(p => p.Notes)
@@ -144,13 +143,57 @@ namespace Servisnaknizka.Data
                 entity.HasIndex(p => new { p.ServiceId, p.VehicleId }).IsUnique();
                 entity.HasIndex(p => new { p.VehicleId, p.IsActive });
             });
+            // SQL Server Å¡pecifickÃ© nastavenia pre Service
+            builder.Entity<Service>(entity =>
+            {
+                entity.ToTable("Services");
 
-            // Konfigurácia vzahov
+                entity.Property(s => s.CompanyName)
+                    .HasMaxLength(100)
+                    .IsRequired()
+                    .HasColumnType("nvarchar(100)");
+
+                entity.Property(s => s.ICO)
+                    .HasMaxLength(20)
+                    .HasColumnType("varchar(20)");
+
+                entity.Property(s => s.Address)
+                    .HasMaxLength(200)
+                    .HasColumnType("nvarchar(200)");
+
+                entity.Property(s => s.City)
+                    .HasMaxLength(100)
+                    .HasColumnType("nvarchar(100)");
+
+                entity.Property(s => s.PostalCode)
+                    .HasMaxLength(10)
+                    .HasColumnType("varchar(10)");
+
+                entity.Property(s => s.Phone)
+                    .HasMaxLength(20)
+                    .HasColumnType("varchar(20)");
+
+                entity.Property(s => s.ContactEmail)
+                    .HasMaxLength(100)
+                    .HasColumnType("nvarchar(100)");
+
+                entity.Property(s => s.Description)
+                    .HasMaxLength(500)
+                    .HasColumnType("nvarchar(500)");
+
+                entity.Property(s => s.CreatedAt)
+                    .HasDefaultValueSql("GETUTCDATE()")
+                    .HasColumnType("datetime2");
+
+                entity.HasIndex(s => s.UserId).IsUnique();
+                entity.HasIndex(s => s.ICO);
+            });
+            // Konfigurï¿½cia vzï¿½ahov
             ConfigureRelationships(builder);
         }
 
         /// <summary>
-        /// Konfigurácia vzahov medzi entitami
+        /// Konfigurï¿½cia vzï¿½ahov medzi entitami
         /// </summary>
         private static void ConfigureRelationships(ModelBuilder builder)
         {
@@ -195,6 +238,13 @@ namespace Servisnaknizka.Data
                 .WithMany()
                 .HasForeignKey(p => p.GrantedById)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // Service -> User (1:1)
+            builder.Entity<Service>()
+                .HasOne(s => s.User)
+                .WithOne(u => u.ServiceProfile)
+                .HasForeignKey<Service>(s => s.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

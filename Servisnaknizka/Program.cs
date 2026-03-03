@@ -275,36 +275,150 @@ async Task SeedDataAsync(UserManager<User> userManager, ApplicationDbContext con
         }
     }
 
-    // ✅ KROK 4: Vytvorenie servisu
-    var serviceEmail = "servis@autoservis.sk";
-    var serviceUser = await userManager.FindByEmailAsync(serviceEmail);
+    // ✅ KROK 4: Vytvorenie servisov
+    // Servis 1: AutoServis Bratislava
+    var serviceEmail1 = "servis@autoservis.sk";
+    var serviceUser1 = await userManager.FindByEmailAsync(serviceEmail1);
     
-    if (serviceUser == null)
+    if (serviceUser1 == null)
     {
-        var service = new User
+        var sUser = new User
         {
             FirstName = "AutoServis",
             LastName = "Bratislava",
-            UserName = serviceEmail,
-            Email = serviceEmail,
+            UserName = serviceEmail1,
+            Email = serviceEmail1,
             Role = UserRole.Service,
             EmailConfirmed = true
         };
 
-        var result = await userManager.CreateAsync(service, "Service123!");
+        var result = await userManager.CreateAsync(sUser, "Service123!");
         if (result.Succeeded)
         {
-            await userManager.AddToRoleAsync(service, "Service");
-            await userManager.AddClaimAsync(service, new Claim(ClaimTypes.Role, "Service"));
+            await userManager.AddToRoleAsync(sUser, "Service");
+            await userManager.AddClaimAsync(sUser, new Claim(ClaimTypes.Role, "Service"));
+
+            // Vytvorenie servisného profilu
+            var serviceProfile = new Service
+            {
+                CompanyName = "AutoServis Bratislava s.r.o.",
+                ICO = "12345678",
+                Address = "Hlavná 15",
+                City = "Bratislava",
+                PostalCode = "81101",
+                Phone = "+421 2 1234 5678",
+                ContactEmail = serviceEmail1,
+                Description = "Autorizovaný servis pre všetky značky osobných vozidiel. Diagnostika, opravy, údržba.",
+                UserId = sUser.Id,
+                IsActive = true
+            };
+            context.Services.Add(serviceProfile);
+            await context.SaveChangesAsync();
         }
     }
     else
     {
-        var isInRole = await userManager.IsInRoleAsync(serviceUser, "Service");
+        var isInRole = await userManager.IsInRoleAsync(serviceUser1, "Service");
         if (!isInRole)
         {
-            await userManager.AddToRoleAsync(serviceUser, "Service");
-            await userManager.AddClaimAsync(serviceUser, new Claim(ClaimTypes.Role, "Service"));
+            await userManager.AddToRoleAsync(serviceUser1, "Service");
+            await userManager.AddClaimAsync(serviceUser1, new Claim(ClaimTypes.Role, "Service"));
+        }
+        // Ak nemá servisný profil, vytvoriť
+        if (!await context.Services.AnyAsync(s => s.UserId == serviceUser1.Id))
+        {
+            context.Services.Add(new Service
+            {
+                CompanyName = "AutoServis Bratislava s.r.o.",
+                ICO = "12345678",
+                Address = "Hlavná 15",
+                City = "Bratislava",
+                PostalCode = "81101",
+                Phone = "+421 2 1234 5678",
+                ContactEmail = serviceEmail1,
+                Description = "Autorizovaný servis pre všetky značky osobných vozidiel. Diagnostika, opravy, údržba.",
+                UserId = serviceUser1.Id,
+                IsActive = true
+            });
+            await context.SaveChangesAsync();
+        }
+    }
+
+    // Servis 2: Pneuservis Košice
+    var serviceEmail2 = "pneuservis@kosice.sk";
+    var serviceUser2 = await userManager.FindByEmailAsync(serviceEmail2);
+
+    if (serviceUser2 == null)
+    {
+        var sUser2 = new User
+        {
+            FirstName = "Pneuservis",
+            LastName = "Košice",
+            UserName = serviceEmail2,
+            Email = serviceEmail2,
+            Role = UserRole.Service,
+            EmailConfirmed = true
+        };
+
+        var result = await userManager.CreateAsync(sUser2, "Service123!");
+        if (result.Succeeded)
+        {
+            await userManager.AddToRoleAsync(sUser2, "Service");
+            await userManager.AddClaimAsync(sUser2, new Claim(ClaimTypes.Role, "Service"));
+
+            context.Services.Add(new Service
+            {
+                CompanyName = "Pneuservis Košice s.r.o.",
+                ICO = "87654321",
+                Address = "Štúrova 42",
+                City = "Košice",
+                PostalCode = "04001",
+                Phone = "+421 55 622 3344",
+                ContactEmail = serviceEmail2,
+                Description = "Prezúvanie pneumatík, vyvažovanie, geometria kolies, predaj pneumatík.",
+                UserId = sUser2.Id,
+                IsActive = true
+            });
+            await context.SaveChangesAsync();
+        }
+    }
+
+    // Servis 3: AutoElektrika Žilina
+    var serviceEmail3 = "elektrika@zilina.sk";
+    var serviceUser3 = await userManager.FindByEmailAsync(serviceEmail3);
+
+    if (serviceUser3 == null)
+    {
+        var sUser3 = new User
+        {
+            FirstName = "AutoElektrika",
+            LastName = "Žilina",
+            UserName = serviceEmail3,
+            Email = serviceEmail3,
+            Role = UserRole.Service,
+            EmailConfirmed = true
+        };
+
+        var result = await userManager.CreateAsync(sUser3, "Service123!");
+        if (result.Succeeded)
+        {
+            await userManager.AddToRoleAsync(sUser3, "Service");
+            await userManager.AddClaimAsync(sUser3, new Claim(ClaimTypes.Role, "Service"));
+
+            context.Services.Add(new Service
+            {
+                CompanyName = "AutoElektrika Žilina",
+                ICO = "55667788",
+                Address = "Predmestská 8",
+                City = "Žilina",
+                PostalCode = "01001",
+                Phone = "+421 41 555 6677",
+                ContactEmail = serviceEmail3,
+                Description = "Autoelektrikárske práce, diagnostika, oprava elektroniky vozidiel.",
+                UserId = sUser3.Id,
+                IsActive = true
+            });
+            await context.SaveChangesAsync();
         }
     }
 }
