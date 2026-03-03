@@ -99,6 +99,14 @@
                             <a href="/forgot-password" class="forgot-link">Zabudnuté heslo?</a>
                         </div>
 
+                        @if (!string.IsNullOrEmpty(successMessage))
+                        {
+                            <div class="alert-success">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                <span>@successMessage</span>
+                            </div>
+                        }
+
                         @if (!string.IsNullOrEmpty(errorMessage))
                         {
                             <div class="alert-error">
@@ -118,6 +126,11 @@
                             </svg>
                         </button>
                     </form>
+
+                    <div class="register-link">
+                        <span>Nemáte účet?</span>
+                        <a href="/register">Zaregistrujte sa</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -526,6 +539,23 @@
         color: var(--primary-dark);
     }
 
+    .alert-success {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 16px;
+        background: #dcfce7;
+        border: 1px solid #bbf7d0;
+        border-radius: 12px;
+        color: #166534;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    .alert-success svg {
+        flex-shrink: 0;
+    }
+
     .alert-error {
         display: flex;
         align-items: center;
@@ -541,6 +571,24 @@
 
     .alert-error svg {
         flex-shrink: 0;
+    }
+
+    .register-link {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 14px;
+        color: var(--gray);
+    }
+
+    .register-link a {
+        color: var(--primary);
+        font-weight: 600;
+        text-decoration: none;
+        margin-left: 4px;
+    }
+
+    .register-link a:hover {
+        text-decoration: underline;
     }
 
     .btn-login {
@@ -633,13 +681,14 @@
 
 @code {
     private string errorMessage = string.Empty;
+    private string successMessage = string.Empty;
 
     protected override void OnInitialized()
     {
-        // Skontrolovať či prišiel error z API
         var uri = new Uri(Navigation.Uri);
         var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
         var error = query["error"];
+        var success = query["success"];
         
         if (!string.IsNullOrEmpty(error))
         {
@@ -648,6 +697,15 @@
                 "invalid" => "Nesprávne prihlasovacie údaje.",
                 "locked" => "Účet je dočasne uzamknutý. Skúste neskôr.",
                 _ => "Chyba pri prihlasovaní."
+            };
+        }
+
+        if (!string.IsNullOrEmpty(success))
+        {
+            successMessage = success switch
+            {
+                "registered" => "Registrácia bola úspešná! Prihláste sa.",
+                _ => ""
             };
         }
     }
