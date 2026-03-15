@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Servisnaknizka.Models
 {
     /// <summary>
-    /// Vozidlo - obsahuje základné informácie o automobile
+    /// Vozidlo - obsahuje zï¿½kladnï¿½ informï¿½cie o automobile
     /// </summary>
     public class Vehicle
     {
@@ -41,10 +41,10 @@ namespace Servisnaknizka.Models
 
         public bool IsActive { get; set; } = true;
 
-        // Cudzí k¾úè na majite¾a
+        // Cudzï¿½ kï¿½ï¿½ï¿½ na majiteï¿½a
         public int OwnerId { get; set; }
 
-        // Navigaèné vlastnosti
+        // Navigaï¿½nï¿½ vlastnosti
         [ForeignKey(nameof(OwnerId))]
         public virtual User Owner { get; set; } = null!;
 

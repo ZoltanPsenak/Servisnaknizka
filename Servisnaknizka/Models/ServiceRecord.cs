@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Servisnaknizka.Models
 {
     /// <summary>
-    /// Servisný záznam - evidencia jednotlivých servisných úkonov
+    /// Servisnï¿½ zï¿½znam - evidencia jednotlivï¿½ch servisnï¿½ch ï¿½konov
     /// </summary>
     public class ServiceRecord
     {
@@ -20,25 +20,25 @@ namespace Servisnaknizka.Models
         public string Description { get; set; } = string.Empty;
 
         [Range(0, 2000000)]
-        public int Mileage { get; set; } // Poèet kilometrov
+        public int Mileage { get; set; } // Poï¿½et kilometrov
 
         [Column(TypeName = "decimal(10,2)")]
         public decimal? Cost { get; set; }
 
         [MaxLength(100)]
-        public string? ServiceType { get; set; } // napr. "Pravidelný servis", "Oprava", "STK"
+        public string? ServiceType { get; set; } // napr. "Pravidelnï¿½ servis", "Oprava", "STK"
 
         [MaxLength(200)]
-        public string? PartsUsed { get; set; } // Použité náhradné diely
+        public string? PartsUsed { get; set; } // Pouï¿½itï¿½ nï¿½hradnï¿½ diely
 
         [MaxLength(1000)]
-        public string? Notes { get; set; } // Poznámky
+        public string? Notes { get; set; } // Poznï¿½mky
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        public int CreatedById { get; set; } // Kto vytvoril záznam (servis)
+        public int CreatedById { get; set; } // Kto vytvoril zï¿½znam (servis)
 
-        // Navigaèné vlastnosti
+        // Navigaï¿½nï¿½ vlastnosti
         [ForeignKey(nameof(VehicleId))]
         public virtual Vehicle Vehicle { get; set; } = null!;
 

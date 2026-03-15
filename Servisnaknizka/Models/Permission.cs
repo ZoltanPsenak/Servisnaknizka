@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Servisnaknizka.Models
 {
     /// <summary>
-    /// Oprávnenia servisu k vozidlu - definuje, ktorı servis môe pristupova k akému vozidlu
+    /// Oprï¿½vnenia servisu k vozidlu - definuje, ktorï¿½ servis mï¿½ï¿½e pristupovaï¿½ k akï¿½mu vozidlu
     /// </summary>
     public class Permission
     {
@@ -16,14 +16,14 @@ namespace Servisnaknizka.Models
 
         public DateTime GrantedAt { get; set; } = DateTime.UtcNow;
 
-        public int GrantedById { get; set; } // Kto udelil oprávnenie (majite¾ alebo admin)
+        public int GrantedById { get; set; } // Kto udelil oprï¿½vnenie (majiteï¿½ alebo admin)
 
         public bool IsActive { get; set; } = true;
 
         [MaxLength(200)]
         public string? Notes { get; set; }
 
-        // Navigaèné vlastnosti
+        // Navigaï¿½nï¿½ vlastnosti
         [ForeignKey(nameof(ServiceId))]
         public virtual User Service { get; set; } = null!;
 
