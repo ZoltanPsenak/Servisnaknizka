@@ -1221,6 +1221,21 @@ else
                                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
                                             </button>
                                         }
+                                        @if (confirmDeleteUserId == user.Id)
+                                        {
+                                            <button @onclick="() => AdminDeleteUser(user.Id)" class="cd-btn-icon danger" title="Potvrdiť vymazanie" style="background:#dc3545;color:#fff;">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                            </button>
+                                            <button @onclick="() => confirmDeleteUserId = 0" class="cd-btn-icon" title="Zrušiť">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button @onclick="() => confirmDeleteUserId = user.Id" class="cd-btn-icon danger" title="Vymazať používateľa">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                            </button>
+                                        }
                                     </div>
                                 </div>
                             }
@@ -2980,6 +2995,9 @@ else
     private string adminUserMessage = string.Empty;
     private bool adminUserSuccess = false;
 
+    // Admin delete user confirmation
+    private int confirmDeleteUserId = 0;
+
     // Admin edit user modal
     private bool showEditUserModal = false;
     private int editUserId = 0;
@@ -3676,6 +3694,48 @@ else
         catch (Exception ex)
         {
             Console.WriteLine($"Error toggling user: {ex.Message}");
+        }
+        StateHasChanged();
+    }
+
+    private async Task AdminDeleteUser(int userId)
+    {
+        if (userRole != "admin") return;
+
+        try
+        {
+            var user = await DbContext.Users
+                .Include(u => u.OwnedVehicles).ThenInclude(v => v.ServiceRecords)
+                .Include(u => u.OwnedVehicles).ThenInclude(v => v.ServicePermissions)
+                .Include(u => u.ServicePermissions)
+                .Include(u => u.CreatedServiceRecords)
+                .Include(u => u.Notifications)
+                .Include(u => u.ServiceProfile)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (user == null) return;
+
+            // Remove related data
+            foreach (var vehicle in user.OwnedVehicles)
+            {
+                DbContext.ServiceRecords.RemoveRange(vehicle.ServiceRecords);
+                DbContext.Permissions.RemoveRange(vehicle.ServicePermissions);
+            }
+            DbContext.Vehicles.RemoveRange(user.OwnedVehicles);
+            DbContext.Permissions.RemoveRange(user.ServicePermissions);
+            DbContext.ServiceRecords.RemoveRange(user.CreatedServiceRecords);
+            DbContext.Notifications.RemoveRange(user.Notifications);
+            if (user.ServiceProfile != null)
+                DbContext.Services.Remove(user.ServiceProfile);
+
+            DbContext.Users.Remove(user);
+            await DbContext.SaveChangesAsync();
+            confirmDeleteUserId = 0;
+            await LoadDataFromDatabase();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error deleting user: {ex.Message}");
         }
         StateHasChanged();
     }
