@@ -41,6 +41,15 @@ namespace Servisnaknizka.Models
 
         public bool IsActive { get; set; } = true;
 
+        // Pripomienky servisu
+        public int ServiceIntervalMonths { get; set; } = 12;
+        public DateTime? NextServiceDate { get; set; }
+
+        // STK, Emisná kontrola, poistenie
+        public DateTime? StkExpiry { get; set; }
+        public DateTime? EmissionExpiry { get; set; }
+        public DateTime? InsuranceExpiry { get; set; }
+
         // Prenosový kód na prevod vozidla na nového majiteľa
         [MaxLength(8)]
         public string? TransferCode { get; set; }

@@ -53,6 +53,7 @@ builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
 // Konfigurácia cookies pre autentifikáciu
 builder.Services.ConfigureApplicationCookie(options =>
 {
+    options.Cookie.Name = ".ServisnaKnizka.Auth";
     options.LoginPath = "/login";
     options.LogoutPath = "/logout";
     options.AccessDeniedPath = "/access-denied";
@@ -62,11 +63,14 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.SecurePolicy = builder.Environment.IsDevelopment() 
         ? CookieSecurePolicy.SameAsRequest 
         : CookieSecurePolicy.Always;
-    options.Cookie.SameSite = SameSiteMode.Strict;
+    options.Cookie.SameSite = SameSiteMode.Lax;
 });
 
 // Registrácia služieb
 builder.Services.AddScoped<IVehicleService, VehicleService>();
+
+// Pozadie: automatické pripomienky servisov
+builder.Services.AddHostedService<ReminderService>();
 
 // Pridanie Razor Components
 builder.Services.AddRazorComponents()
@@ -145,6 +149,10 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
     app.UseHsts();
+}
+else
+{
+    app.UseDeveloperExceptionPage();
 }
 
 app.UseHttpsRedirection();

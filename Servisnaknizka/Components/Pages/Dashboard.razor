@@ -44,6 +44,19 @@ else
                         <span class="cd-user-role">@GetRoleDisplayName()</span>
                     </div>
                 </div>
+                <button @onclick="() => show2faSettings = !show2faSettings" class="cd-btn-logout" title="Nastavenia 2FA">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
+                    </svg>
+                    <span>2FA</span>
+                </button>
+                <button @onclick="ToggleNotifications" class="cd-notif-btn" title="Pripomienky">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                    @if (unreadCount > 0)
+                    {
+                        <span class="cd-notif-badge">@(unreadCount > 9 ? "9+" : unreadCount.ToString())</span>
+                    }
+                </button>
                 <button @onclick="Logout" class="cd-btn-logout">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
@@ -55,6 +68,284 @@ else
     </nav>
 
     <!-- MAIN -->
+    <!-- NOTIFICATION PANEL -->
+    @if (showNotifPanel)
+    {
+        <div class="cd-notif-overlay" @onclick="() => showNotifPanel = false"></div>
+        <div class="cd-notif-panel">
+            <div class="cd-notif-header">
+                <h3>Pripomienky</h3>
+                <button @onclick="() => showNotifPanel = false" class="cd-modal-close">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <div class="cd-notif-list">
+                @if (notifications.Any())
+                {
+                    @foreach (var notif in notifications)
+                    {
+                        <div class="cd-notif-item @(notif.IsRead ? "" : "unread")" @onclick="() => MarkAsRead(notif.Id)">
+                            <div class="cd-ni-top">
+                                <div style="display:flex;align-items:center;">
+                                    <span class="cd-ni-type @notif.Type"></span>
+                                    <span class="cd-ni-title">@notif.Title</span>
+                                </div>
+                                <span class="cd-ni-time">@FormatNotifTime(notif.CreatedAt)</span>
+                            </div>
+                            <div class="cd-ni-msg">@notif.Message</div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="cd-notif-empty">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                        <p>Žiadne pripomienky</p>
+                    </div>
+                }
+            </div>
+            @if (notifications.Any(n => !n.IsRead))
+            {
+                <div class="cd-notif-actions">
+                    <button @onclick="MarkAllAsRead" class="cd-btn cd-btn-ghost" style="width:100%;font-size:13px;">Označiť všetko ako prečítané</button>
+                </div>
+            }
+        </div>
+    }
+
+    <!-- REMINDER SETTINGS MODAL -->
+    @if (showReminderModal)
+    {
+        <div class="cd-modal-overlay" @onclick="() => showReminderModal = false">
+            <div class="cd-modal-reminder" @onclick:stopPropagation="true">
+                <div class="cd-modal-header">
+                    <h2>Pripomienky a termíny</h2>
+                    <button @onclick="() => showReminderModal = false" class="cd-modal-close">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                </div>
+                <div class="cd-modal-body" style="max-height:70vh;overflow-y:auto;">
+                    <div class="cd-reminder-info">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0369a1" stroke-width="2" style="flex-shrink:0;margin-top:2px;"><path d="M7 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0-4 0"/><path d="M17 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0-4 0"/><path d="M5 17H3v-6l2-5h9l4 5h1a2 2 0 0 1 2 2v4h-2"/><path d="M9 17h6"/></svg>
+                        <p><strong>@reminderVehicleName</strong><br/>Nastavte termíny a pripomienky pre toto vozidlo.</p>
+                    </div>
+
+                    <!-- SERVISNÝ INTERVAL -->
+                    <div class="cd-reminder-section">
+                        <h4 class="cd-reminder-section-title">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+                            Pravidelný servis
+                        </h4>
+                        <div class="cd-interval-options">
+                            <button class="cd-interval-opt @(reminderInterval == 0 ? "active" : "")" @onclick="() => reminderInterval = 0">Vyp.</button>
+                            <button class="cd-interval-opt @(reminderInterval == 3 ? "active" : "")" @onclick="() => reminderInterval = 3">3 mes.</button>
+                            <button class="cd-interval-opt @(reminderInterval == 6 ? "active" : "")" @onclick="() => reminderInterval = 6">6 mes.</button>
+                            <button class="cd-interval-opt @(reminderInterval == 12 ? "active" : "")" @onclick="() => reminderInterval = 12">12 mes.</button>
+                            <button class="cd-interval-opt @(reminderInterval == 24 ? "active" : "")" @onclick="() => reminderInterval = 24">24 mes.</button>
+                        </div>
+                        <p class="cd-reminder-hint">
+                            @if (reminderInterval == 0) { <span>Pripomienky pravidelného servisu sú vypnuté.</span> }
+                            else { <span>Upozornenie 30 a 7 dní pred plánovaným servisom.</span> }
+                        </p>
+                    </div>
+
+                    <!-- STK -->
+                    <div class="cd-reminder-section">
+                        <h4 class="cd-reminder-section-title">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            STK (Technická kontrola)
+                        </h4>
+                        <div class="cd-form-row" style="gap:12px;">
+                            <div class="cd-field" style="flex:1;">
+                                <label>Platnosť STK do</label>
+                                <input type="date" @bind="reminderStkExpiry" class="cd-input" />
+                            </div>
+                            @if (reminderStkExpiry.HasValue)
+                            {
+                                <div style="display:flex;align-items:end;padding-bottom:2px;">
+                                    <button @onclick="() => reminderStkExpiry = null" class="cd-btn-icon" title="Vymazať" style="color:#dc2626;">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                    </button>
+                                </div>
+                            }
+                        </div>
+                        <p class="cd-reminder-hint">@GetExpiryHint(reminderStkExpiry, "STK")</p>
+                    </div>
+
+                    <!-- EMISNÁ KONTROLA -->
+                    <div class="cd-reminder-section">
+                        <h4 class="cd-reminder-section-title">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            Emisná kontrola
+                        </h4>
+                        <div class="cd-form-row" style="gap:12px;">
+                            <div class="cd-field" style="flex:1;">
+                                <label>Platnosť EK do</label>
+                                <input type="date" @bind="reminderEmissionExpiry" class="cd-input" />
+                            </div>
+                            @if (reminderEmissionExpiry.HasValue)
+                            {
+                                <div style="display:flex;align-items:end;padding-bottom:2px;">
+                                    <button @onclick="() => reminderEmissionExpiry = null" class="cd-btn-icon" title="Vymazať" style="color:#dc2626;">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                    </button>
+                                </div>
+                            }
+                        </div>
+                        <p class="cd-reminder-hint">@GetExpiryHint(reminderEmissionExpiry, "emisnej kontroly")</p>
+                    </div>
+
+                    <!-- POISTENIE -->
+                    <div class="cd-reminder-section">
+                        <h4 class="cd-reminder-section-title">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+                            PZP / Havarijné poistenie
+                        </h4>
+                        <div class="cd-form-row" style="gap:12px;">
+                            <div class="cd-field" style="flex:1;">
+                                <label>Platnosť poistenia do</label>
+                                <input type="date" @bind="reminderInsuranceExpiry" class="cd-input" />
+                            </div>
+                            @if (reminderInsuranceExpiry.HasValue)
+                            {
+                                <div style="display:flex;align-items:end;padding-bottom:2px;">
+                                    <button @onclick="() => reminderInsuranceExpiry = null" class="cd-btn-icon" title="Vymazať" style="color:#dc2626;">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                    </button>
+                                </div>
+                            }
+                        </div>
+                        <p class="cd-reminder-hint">@GetExpiryHint(reminderInsuranceExpiry, "poistenia")</p>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(reminderMessage))
+                    {
+                        <div class="cd-alert @(reminderSuccess ? "cd-alert-ok" : "cd-alert-err")" style="margin-top:12px;">
+                            @reminderMessage
+                        </div>
+                    }
+
+                    <div class="cd-form-actions" style="margin-top:20px;">
+                        <button @onclick="() => showReminderModal = false" class="cd-btn cd-btn-ghost">Zrušiť</button>
+                        <button @onclick="SaveReminderSettings" class="cd-btn cd-btn-primary" disabled="@isLoading">Uložiť všetko</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- 2FA SETTINGS MODAL -->
+    @if (show2faSettings)
+    {
+        <div class="cd-modal-overlay" @onclick="() => show2faSettings = false">
+            <div class="cd-modal-2fa" @onclick:stopPropagation="true">
+                <div class="cd-modal-header">
+                    <h2>Dvojfaktorové overenie (2FA)</h2>
+                    <button @onclick="() => show2faSettings = false" class="cd-modal-close">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                </div>
+                <div class="cd-modal-body">
+                    @if (is2faEnabled)
+                    {
+                        <div class="cd-2fa-status cd-2fa-active">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 12 15 16 9" stroke="#16a34a"/></svg>
+                            <div>
+                                <strong>2FA je aktivované</strong>
+                                <p>Váš účet je chránený dvojfaktorovým overením.</p>
+                            </div>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(twoFaMessage))
+                        {
+                            <div class="cd-alert @(twoFaSuccess ? "cd-alert-ok" : "cd-alert-err")" style="margin-top:16px;">
+                                @twoFaMessage
+                            </div>
+                        }
+
+                        <div class="cd-2fa-disable">
+                            <p style="color:#64748b;font-size:13px;margin-bottom:12px;">Ak chcete vypnúť 2FA, zadajte overovací kód z aplikácie:</p>
+                            <div style="display:flex;gap:12px;align-items:end;">
+                                <div class="cd-field" style="flex:1;">
+                                    <label>Overovací kód</label>
+                                    <input type="text" @bind="disableCode" class="cd-input" maxlength="7" placeholder="000 000" style="text-align:center;letter-spacing:4px;font-weight:700;" />
+                                </div>
+                                <button @onclick="Disable2fa" class="cd-btn cd-btn-danger" disabled="@isLoading" style="height:44px;">Vypnúť 2FA</button>
+                            </div>
+                        </div>
+                    }
+                    else if (show2faSetup)
+                    {
+                        <div class="cd-2fa-setup">
+                            <div class="cd-2fa-steps">
+                                <div class="cd-2fa-step">
+                                    <div class="cd-2fa-step-num">1</div>
+                                    <div>
+                                        <strong>Nainštalujte autentifikačnú aplikáciu</strong>
+                                        <p>Stiahnite si Google Authenticator, Microsoft Authenticator alebo inú TOTP aplikáciu.</p>
+                                    </div>
+                                </div>
+                                <div class="cd-2fa-step">
+                                    <div class="cd-2fa-step-num">2</div>
+                                    <div>
+                                        <strong>Naskenujte QR kód</strong>
+                                        <p>Otvorte aplikáciu a naskenujte tento QR kód:</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(twoFaQrCodeDataUri))
+                            {
+                                <div class="cd-2fa-qr">
+                                    <img src="@twoFaQrCodeDataUri" alt="QR kód pre 2FA" width="200" height="200" />
+                                </div>
+                            }
+
+                            <div class="cd-2fa-manual">
+                                <p style="font-size:12px;color:#64748b;margin-bottom:6px;">Alebo zadajte kód manuálne:</p>
+                                <code class="cd-2fa-key">@twoFaSharedKey</code>
+                            </div>
+
+                            <div class="cd-2fa-step" style="margin-top:20px;">
+                                <div class="cd-2fa-step-num">3</div>
+                                <div style="flex:1;">
+                                    <strong>Overte kód</strong>
+                                    <p style="margin-bottom:10px;">Zadajte 6-miestny kód z aplikácie na overenie:</p>
+                                    <div style="display:flex;gap:12px;align-items:end;">
+                                        <input type="text" @bind="verifyCode" class="cd-input" maxlength="7" placeholder="000 000" style="text-align:center;letter-spacing:4px;font-weight:700;flex:1;" />
+                                        <button @onclick="Verify2faSetup" class="cd-btn cd-btn-primary" disabled="@isLoading" style="height:44px;">Aktivovať</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(twoFaMessage))
+                            {
+                                <div class="cd-alert @(twoFaSuccess ? "cd-alert-ok" : "cd-alert-err")" style="margin-top:16px;">
+                                    @twoFaMessage
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="cd-2fa-status cd-2fa-inactive">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                            <div>
+                                <strong>2FA nie je aktivované</strong>
+                                <p>Pridajte ďalšiu vrstvu zabezpečenia pre váš účet.</p>
+                            </div>
+                        </div>
+
+                        <button @onclick="Start2faSetup" class="cd-btn cd-btn-primary" style="width:100%;margin-top:20px;" disabled="@isLoading">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            Nastaviť dvojfaktorové overenie
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+
     <div class="cd-main">
         <div class="cd-container">
 
@@ -195,6 +486,9 @@ else
                                     <div class="cd-vc-footer">
                                         <span>@vehicle.ServiceRecords.Count záznamov</span>
                                         <div style="display:flex;gap:4px;">
+                                            <button @onclick:stopPropagation @onclick="() => OpenReminderSettings(vehicle)" class="cd-btn-icon" title="Nastaviť pripomienky">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                                            </button>
                                             <button @onclick:stopPropagation @onclick="() => GenerateTransferCode(vehicle)" class="cd-btn-icon" title="Vygenerovať prenosový kód">
                                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
                                             </button>
@@ -713,6 +1007,61 @@ else
                         }
                     </div>
                 </div>
+
+                <!-- ODOSLAŤ PRIPOMIENKU MAJITEĽOVI -->
+                @if (selectedVehicle != null)
+                {
+                    <div class="cd-section-card">
+                        <div class="cd-section-head">
+                            <h2>Odoslať pripomienku majiteľovi</h2>
+                            <button @onclick="() => showServiceReminderForm = !showServiceReminderForm" class="cd-btn cd-btn-sm cd-btn-ghost">
+                                @(showServiceReminderForm ? "Skryť" : "Nová pripomienka")
+                            </button>
+                        </div>
+                        @if (showServiceReminderForm)
+                        {
+                            <div class="cd-form-card">
+                                <div class="cd-form">
+                                    <div class="cd-reminder-info" style="margin-bottom:16px;">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0369a1" stroke-width="2" style="flex-shrink:0;"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+                                        <p>Odošlite pripomienku majiteľovi vozidla <strong>@selectedVehicle.Brand @selectedVehicle.Model</strong> (@selectedVehicle.Owner.FullName).</p>
+                                    </div>
+                                    <div class="cd-form-row">
+                                        <div class="cd-field">
+                                            <label>Titulok pripomienky *</label>
+                                            <input type="text" @bind="svcReminderTitle" class="cd-input" placeholder="Napr. Výmena oleja, Ďalší servis..." />
+                                        </div>
+                                        <div class="cd-field">
+                                            <label>Typ</label>
+                                            <select @bind="svcReminderCategory" class="cd-input">
+                                                <option value="service">Servis</option>
+                                                <option value="stk">STK</option>
+                                                <option value="emission">Emisná kontrola</option>
+                                                <option value="insurance">Poistenie</option>
+                                                <option value="custom">Iné</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="cd-field">
+                                        <label>Správa</label>
+                                        <textarea @bind="svcReminderMessage" class="cd-textarea" rows="3" placeholder="Podrobnosti pripomienky..."></textarea>
+                                    </div>
+
+                                    @if (!string.IsNullOrEmpty(svcReminderFormMessage))
+                                    {
+                                        <div class="cd-alert @(svcReminderFormSuccess ? "cd-alert-ok" : "cd-alert-err")">
+                                            @svcReminderFormMessage
+                                        </div>
+                                    }
+                                    <div class="cd-form-actions">
+                                        <button type="button" @onclick="() => showServiceReminderForm = false" class="cd-btn cd-btn-ghost">Zrušiť</button>
+                                        <button type="button" @onclick="SendServiceReminder" class="cd-btn cd-btn-primary" disabled="@isLoading">Odoslať pripomienku</button>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
             }
             else if (userRole == "admin")
             {
@@ -2369,6 +2718,74 @@ else
         justify-content: space-between;
         align-items: center;
     }
+
+    /* 2FA Modal */
+    .cd-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;display:flex;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(4px)}
+    .cd-modal-2fa{background:white;border-radius:20px;width:100%;max-width:480px;box-shadow:0 30px 80px rgba(0,0,0,.3);animation:fadeIn .3s ease}
+    .cd-modal-header{display:flex;justify-content:space-between;align-items:center;padding:24px 28px 0;border-bottom:none}
+    .cd-modal-header h2{font-size:18px;font-weight:800;color:#0f172a;margin:0}
+    .cd-modal-close{background:none;border:none;cursor:pointer;padding:6px;border-radius:8px;color:#64748b;transition:all .2s}
+    .cd-modal-close:hover{background:#f1f5f9;color:#0f172a}
+    .cd-modal-body{padding:20px 28px 28px}
+
+    .cd-2fa-status{display:flex;gap:14px;align-items:flex-start;padding:18px;border-radius:14px;margin-bottom:8px}
+    .cd-2fa-status strong{display:block;font-size:15px;margin-bottom:2px;color:#0f172a}
+    .cd-2fa-status p{font-size:13px;color:#64748b;margin:0}
+    .cd-2fa-active{background:#f0fdf4;border:1px solid #bbf7d0}
+    .cd-2fa-inactive{background:#fef2f2;border:1px solid #fecaca}
+
+    .cd-2fa-setup{}
+    .cd-2fa-steps{display:flex;flex-direction:column;gap:16px;margin-bottom:20px}
+    .cd-2fa-step{display:flex;gap:14px;align-items:flex-start}
+    .cd-2fa-step-num{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#2563eb,#0ea5e9);color:white;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+    .cd-2fa-step strong{display:block;font-size:14px;color:#0f172a;margin-bottom:2px}
+    .cd-2fa-step p{font-size:13px;color:#64748b;margin:0}
+    .cd-2fa-qr{text-align:center;padding:20px;background:#f8fafc;border-radius:14px;margin-bottom:16px}
+    .cd-2fa-qr img{border-radius:8px;image-rendering:pixelated}
+    .cd-2fa-manual{text-align:center;margin-bottom:8px}
+    .cd-2fa-key{display:inline-block;font-family:'Courier New',monospace;font-size:15px;font-weight:700;letter-spacing:2px;background:#f1f5f9;padding:10px 18px;border-radius:10px;color:#0f172a;user-select:all;border:1px solid #e2e8f0}
+    .cd-2fa-disable{margin-top:20px;padding-top:20px;border-top:1px solid #e2e8f0}
+
+    .cd-btn-danger{background:#dc2626;color:white;border:none;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;font-family:inherit;white-space:nowrap}
+    .cd-btn-danger:hover{background:#b91c1c}
+
+    /* Notification Bell */
+    .cd-notif-btn{position:relative;background:none;border:none;cursor:pointer;padding:8px;border-radius:10px;color:white;transition:all .2s}
+    .cd-notif-btn:hover{background:rgba(255,255,255,0.15);color:white}
+    .cd-notif-badge{position:absolute;top:2px;right:2px;width:18px;height:18px;background:#ef4444;border-radius:50%;font-size:10px;font-weight:700;color:white;display:flex;align-items:center;justify-content:center;border:2px solid #1e3a8a}
+    .cd-notif-panel{position:fixed;top:0;right:0;width:400px;max-width:100vw;height:100vh;background:white;box-shadow:-10px 0 40px rgba(0,0,0,.15);z-index:1001;display:flex;flex-direction:column;animation:slideIn .3s ease}
+    .cd-notif-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:1000}
+    @@keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
+    .cd-notif-header{padding:20px 24px;border-bottom:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center}
+    .cd-notif-header h3{font-size:16px;font-weight:800;color:#0f172a;margin:0}
+    .cd-notif-list{flex:1;overflow-y:auto;padding:12px}
+    .cd-notif-item{padding:14px 16px;border-radius:12px;margin-bottom:8px;cursor:pointer;transition:all .2s;border:1px solid transparent}
+    .cd-notif-item:hover{background:#f8fafc}
+    .cd-notif-item.unread{background:#eff6ff;border-color:#bfdbfe}
+    .cd-notif-item .cd-ni-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+    .cd-notif-item .cd-ni-title{font-size:13px;font-weight:700;color:#0f172a}
+    .cd-notif-item .cd-ni-time{font-size:11px;color:#94a3b8}
+    .cd-notif-item .cd-ni-msg{font-size:12px;color:#64748b;line-height:1.5}
+    .cd-notif-item .cd-ni-type{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:8px;flex-shrink:0}
+    .cd-ni-type.info{background:#3b82f6}
+    .cd-ni-type.warning{background:#f59e0b}
+    .cd-ni-type.danger{background:#ef4444}
+    .cd-notif-empty{text-align:center;padding:40px 20px;color:#94a3b8}
+    .cd-notif-empty svg{margin-bottom:12px;opacity:.5}
+    .cd-notif-actions{padding:12px 24px;border-top:1px solid #e2e8f0}
+
+    /* Reminder Modal */
+    .cd-modal-reminder{background:white;border-radius:20px;width:100%;max-width:440px;box-shadow:0 30px 80px rgba(0,0,0,.3);animation:fadeIn .3s ease}
+    .cd-reminder-info{display:flex;gap:12px;align-items:flex-start;padding:14px;background:#f0f9ff;border-radius:12px;border:1px solid #bae6fd;margin-bottom:20px}
+    .cd-reminder-info p{font-size:13px;color:#0369a1;margin:0}
+    .cd-interval-options{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+    .cd-interval-opt{padding:8px 16px;border-radius:10px;border:1.5px solid #e2e8f0;background:white;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;font-family:inherit;color:#64748b}
+    .cd-interval-opt:hover{border-color:#3b82f6;color:#3b82f6}
+    .cd-interval-opt.active{background:#2563eb;color:white;border-color:#2563eb}
+
+    .cd-reminder-section{padding:16px;background:#f8fafc;border-radius:12px;border:1px solid #e2e8f0;margin-bottom:12px}
+    .cd-reminder-section-title{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:#0f172a;margin:0 0 10px 0}
+    .cd-reminder-hint{font-size:12px;color:#64748b;margin:8px 0 0 0}
 </style>
 
 @code {
@@ -2476,6 +2893,42 @@ else
     private string claimMessage = string.Empty;
     private bool claimSuccess = false;
 
+    // Notifications
+    private List<Notification> notifications = new();
+    private bool showNotifPanel = false;
+    private int unreadCount = 0;
+
+    // Reminder settings
+    private bool showReminderModal = false;
+    private int reminderVehicleId = 0;
+    private int reminderInterval = 12;
+    private string reminderVehicleName = string.Empty;
+    private string reminderMessage = string.Empty;
+    private bool reminderSuccess = false;
+    private DateTime? reminderStkExpiry;
+    private DateTime? reminderEmissionExpiry;
+    private DateTime? reminderInsuranceExpiry;
+
+    // Service → Owner custom reminder
+    private bool showServiceReminderForm = false;
+    private string svcReminderTitle = string.Empty;
+    private string svcReminderMessage = string.Empty;
+    private string svcReminderCategory = "service";
+    private DateTime svcReminderDate = DateTime.Today.AddMonths(6);
+    private string svcReminderFormMessage = string.Empty;
+    private bool svcReminderFormSuccess = false;
+
+    // 2FA Settings
+    private bool show2faSettings = false;
+    private bool show2faSetup = false;
+    private bool is2faEnabled = false;
+    private string twoFaSharedKey = string.Empty;
+    private string twoFaQrCodeDataUri = string.Empty;
+    private string verifyCode = string.Empty;
+    private string disableCode = string.Empty;
+    private string twoFaMessage = string.Empty;
+    private bool twoFaSuccess = false;
+
     protected override async Task OnInitializedAsync()
     {
         await CheckAuthenticationAndLoadData();
@@ -2507,8 +2960,10 @@ else
             currentLastName = currentUser.LastName;
             userRole = currentUser.Role.ToString().ToLower();
             isAuthenticated = true;
+            is2faEnabled = await UserManager.GetTwoFactorEnabledAsync(currentUser);
 
             await LoadDataFromDatabase();
+            await LoadNotifications();
         }
         catch (Exception ex)
         {
@@ -3366,6 +3821,336 @@ else
             isLoading = false;
             StateHasChanged();
         }
+    }
+
+    // ========== NOTIFICATION METHODS ==========
+
+    private async Task LoadNotifications()
+    {
+        notifications = await DbContext.Notifications
+            .Where(n => n.UserId == currentUserId)
+            .OrderByDescending(n => n.CreatedAt)
+            .Take(50)
+            .ToListAsync();
+        unreadCount = notifications.Count(n => !n.IsRead);
+    }
+
+    private async Task ToggleNotifications()
+    {
+        showNotifPanel = !showNotifPanel;
+        if (showNotifPanel)
+        {
+            await LoadNotifications();
+        }
+    }
+
+    private async Task MarkAsRead(int notifId)
+    {
+        var notif = notifications.FirstOrDefault(n => n.Id == notifId);
+        if (notif != null && !notif.IsRead)
+        {
+            var dbNotif = await DbContext.Notifications.FindAsync(notifId);
+            if (dbNotif != null)
+            {
+                dbNotif.IsRead = true;
+                await DbContext.SaveChangesAsync();
+                notif.IsRead = true;
+                unreadCount = notifications.Count(n => !n.IsRead);
+            }
+        }
+    }
+
+    private async Task MarkAllAsRead()
+    {
+        var unread = await DbContext.Notifications
+            .Where(n => n.UserId == currentUserId && !n.IsRead)
+            .ToListAsync();
+        foreach (var n in unread) n.IsRead = true;
+        await DbContext.SaveChangesAsync();
+        foreach (var n in notifications) n.IsRead = true;
+        unreadCount = 0;
+    }
+
+    private void OpenReminderSettings(Vehicle vehicle)
+    {
+        reminderVehicleId = vehicle.Id;
+        reminderVehicleName = $"{vehicle.Brand} {vehicle.Model} ({vehicle.LicensePlate})";
+        reminderInterval = vehicle.ServiceIntervalMonths;
+        reminderStkExpiry = vehicle.StkExpiry;
+        reminderEmissionExpiry = vehicle.EmissionExpiry;
+        reminderInsuranceExpiry = vehicle.InsuranceExpiry;
+        reminderMessage = string.Empty;
+        showReminderModal = true;
+    }
+
+    private string GetExpiryHint(DateTime? expiry, string label)
+    {
+        if (!expiry.HasValue) return $"Dátum expirácie {label} nie je nastavený.";
+        var days = (expiry.Value.Date - DateTime.Today).Days;
+        if (days < 0) return $"⚠ Platnosť {label} vypršala pred {Math.Abs(days)} dňami!";
+        if (days == 0) return $"⚠ Platnosť {label} vyprší dnes!";
+        if (days <= 30) return $"Platnosť {label} vyprší o {days} dní. Budete upozornení.";
+        return $"Platnosť {label} do {expiry.Value:dd.MM.yyyy} (zostáva {days} dní). Upozornenie 30 dní pred.";
+    }
+
+    private async Task SaveReminderSettings()
+    {
+        try
+        {
+            isLoading = true;
+            reminderMessage = string.Empty;
+            var vehicle = await DbContext.Vehicles.FindAsync(reminderVehicleId);
+            if (vehicle == null || vehicle.OwnerId != currentUserId) return;
+
+            vehicle.ServiceIntervalMonths = reminderInterval;
+            vehicle.StkExpiry = reminderStkExpiry;
+            vehicle.EmissionExpiry = reminderEmissionExpiry;
+            vehicle.InsuranceExpiry = reminderInsuranceExpiry;
+
+            // Prepočítať NextServiceDate
+            if (reminderInterval > 0)
+            {
+                var lastService = await DbContext.ServiceRecords
+                    .Where(sr => sr.VehicleId == vehicle.Id)
+                    .OrderByDescending(sr => sr.ServiceDate)
+                    .FirstOrDefaultAsync();
+
+                vehicle.NextServiceDate = lastService != null
+                    ? lastService.ServiceDate.AddMonths(reminderInterval)
+                    : DateTime.UtcNow.AddMonths(reminderInterval);
+            }
+            else
+            {
+                vehicle.NextServiceDate = null;
+            }
+
+            await DbContext.SaveChangesAsync();
+
+            // Aktualizovať lokálny stav
+            var localVehicle = vehicles?.FirstOrDefault(v => v.Id == reminderVehicleId);
+            if (localVehicle != null)
+            {
+                localVehicle.ServiceIntervalMonths = reminderInterval;
+                localVehicle.NextServiceDate = vehicle.NextServiceDate;
+                localVehicle.StkExpiry = reminderStkExpiry;
+                localVehicle.EmissionExpiry = reminderEmissionExpiry;
+                localVehicle.InsuranceExpiry = reminderInsuranceExpiry;
+            }
+
+            reminderMessage = "Nastavenia pripomienok boli úspešne uložené.";
+            reminderSuccess = true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Reminder save error: {ex.Message}");
+            reminderMessage = "Chyba pri ukladaní nastavení.";
+            reminderSuccess = false;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private static string FormatNotifTime(DateTime created)
+    {
+        var diff = DateTime.UtcNow - created;
+        if (diff.TotalMinutes < 60) return $"pred {(int)diff.TotalMinutes} min";
+        if (diff.TotalHours < 24) return $"pred {(int)diff.TotalHours} h";
+        if (diff.TotalDays < 7) return $"pred {(int)diff.TotalDays} d";
+        return created.ToString("dd.MM.yyyy");
+    }
+
+    private async Task SendServiceReminder()
+    {
+        try
+        {
+            isLoading = true;
+            svcReminderFormMessage = string.Empty;
+            if (selectedVehicle == null) return;
+            if (string.IsNullOrWhiteSpace(svcReminderTitle))
+            {
+                svcReminderFormMessage = "Zadajte titulok pripomienky.";
+                svcReminderFormSuccess = false;
+                return;
+            }
+
+            var serviceName = currentServiceProfile?.CompanyName ?? "Autoservis";
+            var notification = new Notification
+            {
+                UserId = selectedVehicle.OwnerId,
+                VehicleId = selectedVehicle.Id,
+                Title = svcReminderTitle,
+                Message = !string.IsNullOrWhiteSpace(svcReminderMessage)
+                    ? $"[{serviceName}] {svcReminderMessage}"
+                    : $"[{serviceName}] Pripomienka pre {selectedVehicle.Brand} {selectedVehicle.Model} ({selectedVehicle.LicensePlate})",
+                Type = "info",
+                Category = svcReminderCategory,
+                IsRead = false,
+                CreatedAt = DateTime.UtcNow
+            };
+            DbContext.Notifications.Add(notification);
+            await DbContext.SaveChangesAsync();
+
+            svcReminderFormMessage = "Pripomienka bola úspešne odoslaná majiteľovi.";
+            svcReminderFormSuccess = true;
+            svcReminderTitle = string.Empty;
+            svcReminderMessage = string.Empty;
+            svcReminderCategory = "service";
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Send service reminder error: {ex.Message}");
+            svcReminderFormMessage = "Chyba pri odosielaní pripomienky.";
+            svcReminderFormSuccess = false;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    // ========== 2FA METHODS ==========
+
+    private async Task Start2faSetup()
+    {
+        try
+        {
+            isLoading = true;
+            twoFaMessage = string.Empty;
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var currentUser = await UserManager.GetUserAsync(authState.User);
+            if (currentUser == null) return;
+
+            await UserManager.ResetAuthenticatorKeyAsync(currentUser);
+            var key = await UserManager.GetAuthenticatorKeyAsync(currentUser);
+            if (string.IsNullOrEmpty(key)) return;
+
+            twoFaSharedKey = FormatKey(key);
+            var email = await UserManager.GetEmailAsync(currentUser);
+            var otpauthUri = $"otpauth://totp/ServisnaKnizka:{Uri.EscapeDataString(email ?? "")}" +
+                             $"?secret={key}&issuer=ServisnaKnizka&digits=6";
+
+            // Generate QR code using QRCoder
+            using var qrGenerator = new QRCoder.QRCodeGenerator();
+            using var qrCodeData = qrGenerator.CreateQrCode(otpauthUri, QRCoder.QRCodeGenerator.ECCLevel.Q);
+            using var qrCode = new QRCoder.PngByteQRCode(qrCodeData);
+            var qrCodeBytes = qrCode.GetGraphic(5);
+            twoFaQrCodeDataUri = $"data:image/png;base64,{Convert.ToBase64String(qrCodeBytes)}";
+
+            show2faSetup = true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"2FA setup error: {ex.Message}");
+            twoFaMessage = "Chyba pri nastavovaní 2FA.";
+            twoFaSuccess = false;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task Verify2faSetup()
+    {
+        try
+        {
+            isLoading = true;
+            twoFaMessage = string.Empty;
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var currentUser = await UserManager.GetUserAsync(authState.User);
+            if (currentUser == null) return;
+
+            var code = verifyCode.Replace(" ", string.Empty).Replace("-", string.Empty);
+            var isValid = await UserManager.VerifyTwoFactorTokenAsync(
+                currentUser,
+                UserManager.Options.Tokens.AuthenticatorTokenProvider,
+                code);
+
+            if (isValid)
+            {
+                await UserManager.SetTwoFactorEnabledAsync(currentUser, true);
+                is2faEnabled = true;
+                show2faSetup = false;
+                twoFaMessage = "2FA bolo úspešne aktivované!";
+                twoFaSuccess = true;
+                verifyCode = string.Empty;
+                twoFaQrCodeDataUri = string.Empty;
+                twoFaSharedKey = string.Empty;
+            }
+            else
+            {
+                twoFaMessage = "Nesprávny overovací kód. Skúste to znova.";
+                twoFaSuccess = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"2FA verify error: {ex.Message}");
+            twoFaMessage = "Chyba pri overovaní kódu.";
+            twoFaSuccess = false;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task Disable2fa()
+    {
+        try
+        {
+            isLoading = true;
+            twoFaMessage = string.Empty;
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var currentUser = await UserManager.GetUserAsync(authState.User);
+            if (currentUser == null) return;
+
+            var code = disableCode.Replace(" ", string.Empty).Replace("-", string.Empty);
+            var isValid = await UserManager.VerifyTwoFactorTokenAsync(
+                currentUser,
+                UserManager.Options.Tokens.AuthenticatorTokenProvider,
+                code);
+
+            if (isValid)
+            {
+                await UserManager.SetTwoFactorEnabledAsync(currentUser, false);
+                await UserManager.ResetAuthenticatorKeyAsync(currentUser);
+                is2faEnabled = false;
+                twoFaMessage = "2FA bolo vypnuté.";
+                twoFaSuccess = true;
+                disableCode = string.Empty;
+            }
+            else
+            {
+                twoFaMessage = "Nesprávny overovací kód.";
+                twoFaSuccess = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"2FA disable error: {ex.Message}");
+            twoFaMessage = "Chyba pri vypínaní 2FA.";
+            twoFaSuccess = false;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private static string FormatKey(string key)
+    {
+        var result = new System.Text.StringBuilder();
+        int count = 0;
+        foreach (var c in key)
+        {
+            result.Append(c);
+            count++;
+            if (count % 4 == 0 && count < key.Length) result.Append(' ');
+        }
+        return result.ToString();
     }
 
     // ========== NAVIGATION ==========

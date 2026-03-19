@@ -53,6 +53,16 @@ public class AuthController : ControllerBase
             }
             return Redirect(returnUrl);
         }
+
+        if (result.RequiresTwoFactor)
+        {
+            var returnUrl = "/dashboard";
+            if (!string.IsNullOrEmpty(request.ReturnUrl) && Url.IsLocalUrl(request.ReturnUrl))
+            {
+                returnUrl = request.ReturnUrl;
+            }
+            return Redirect($"/login-2fa?returnUrl={Uri.EscapeDataString(returnUrl)}&rememberMe={request.RememberMe}");
+        }
         
         if (result.IsLockedOut)
         {
@@ -124,6 +134,46 @@ public class AuthController : ControllerBase
         await _signInManager.SignOutAsync();
         return Redirect("/");
     }
+
+    [HttpPost("login-2fa")]
+    public async Task<IActionResult> LoginWith2fa([FromForm] TwoFactorRequest request)
+    {
+        var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
+        if (user == null)
+        {
+            return Redirect("/login?error=invalid");
+        }
+
+        if (string.IsNullOrWhiteSpace(request.Code))
+        {
+            return Redirect("/login-2fa?error=invalid_code");
+        }
+
+        var authenticatorCode = request.Code.Replace(" ", string.Empty).Replace("-", string.Empty);
+
+        var result = await _signInManager.TwoFactorAuthenticatorSignInAsync(
+            authenticatorCode,
+            request.RememberMe,
+            rememberClient: false
+        );
+
+        if (result.Succeeded)
+        {
+            var returnUrl = "/dashboard";
+            if (!string.IsNullOrEmpty(request.ReturnUrl) && Url.IsLocalUrl(request.ReturnUrl))
+            {
+                returnUrl = request.ReturnUrl;
+            }
+            return Redirect(returnUrl);
+        }
+
+        if (result.IsLockedOut)
+        {
+            return Redirect("/login?error=locked");
+        }
+
+        return Redirect("/login-2fa?error=invalid_code");
+    }
 }
 
 public class LoginRequest
@@ -142,4 +192,11 @@ public class RegisterRequest
     public string Password { get; set; } = string.Empty;
     public string ConfirmPassword { get; set; } = string.Empty;
     public string Role { get; set; } = "Owner";
+}
+
+public class TwoFactorRequest
+{
+    public string Code { get; set; } = string.Empty;
+    public bool RememberMe { get; set; } = false;
+    public string? ReturnUrl { get; set; }
 }

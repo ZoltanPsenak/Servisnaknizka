@@ -1,11 +1,9 @@
-@page "/login"
+@page "/login-2fa"
 @layout EmptyLayout
 @rendermode InteractiveServer
 @inject NavigationManager Navigation
-@inject IJSRuntime JSRuntime
-@inject UserManager<User> UserManager
 
-<PageTitle>Prihlásenie - Servisná knižka</PageTitle>
+<PageTitle>Overenie 2FA - Servisná knižka</PageTitle>
 
 <div class="lg">
     <div class="lg-bg">
@@ -16,16 +14,15 @@
     <div class="lg-center">
         <div class="lg-card">
             <a href="/" class="lg-logo">Servisná Knižka</a>
-            <h1>Prihlásenie</h1>
-            <p class="lg-sub">Zadajte svoje údaje pre prístup do systému</p>
-
-            @if (!string.IsNullOrEmpty(successMessage))
-            {
-                <div class="lg-msg lg-msg-ok">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-                    @successMessage
-                </div>
-            }
+            <div class="lg-lock-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="1.5">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                    <path d="M7 11V7a5 5 0 0110 0v4"/>
+                    <circle cx="12" cy="16" r="1"/>
+                </svg>
+            </div>
+            <h1>Dvojfaktorové overenie</h1>
+            <p class="lg-sub">Zadajte 6-miestny kód z vašej autentifikačnej aplikácie</p>
 
             @if (!string.IsNullOrEmpty(errorMessage))
             {
@@ -35,38 +32,25 @@
                 </div>
             }
 
-            <form method="post" action="/api/auth/login" class="lg-form" data-enhance="false">
-                <input type="hidden" name="returnUrl" value="/dashboard" />
+            <form method="post" action="/api/auth/login-2fa" class="lg-form" data-enhance="false">
+                <input type="hidden" name="returnUrl" value="@returnUrl" />
+                <input type="hidden" name="rememberMe" value="@rememberMe" />
 
                 <div class="lg-field">
-                    <label for="email">E-mailová adresa</label>
-                    <div class="lg-input-wrap">
-                        <svg class="lg-input-ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                        <input type="email" id="email" name="email" placeholder="vas@email.sk" required />
-                    </div>
-                </div>
-
-                <div class="lg-field">
-                    <label for="password">Heslo</label>
+                    <label for="code">Overovací kód</label>
                     <div class="lg-input-wrap">
                         <svg class="lg-input-ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-                        <input type="password" id="password" name="password" placeholder="Vaše heslo" required />
+                        <input type="text" id="code" name="code" placeholder="000 000" required
+                               maxlength="7" autocomplete="one-time-code" inputmode="numeric"
+                               style="text-align:center;letter-spacing:6px;font-size:22px;font-weight:700;" />
                     </div>
                 </div>
 
-                <div class="lg-row">
-                    <label class="lg-check">
-                        <input type="checkbox" name="rememberMe" value="true" />
-                        <span>Zapamätať si ma</span>
-                    </label>
-                </div>
-
-                <button type="submit" class="lg-btn">Prihlásiť sa</button>
+                <button type="submit" class="lg-btn">Overiť</button>
             </form>
 
             <div class="lg-footer">
-                <span>Nemáte účet?</span>
-                <a href="/register">Zaregistrujte sa</a>
+                <a href="/login">Späť na prihlásenie</a>
             </div>
         </div>
     </div>
@@ -89,18 +73,17 @@
     .lg-card{background:var(--w);border-radius:24px;padding:40px 36px;box-shadow:0 30px 80px rgba(0,0,0,.2);animation:fadeIn .5s ease}
     @@keyframes fadeIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 
-    .lg-logo{display:block;text-align:center;font-size:15px;font-weight:800;color:var(--p);text-decoration:none;letter-spacing:-.02em;margin-bottom:28px}
+    .lg-logo{display:block;text-align:center;font-size:15px;font-weight:800;color:var(--p);text-decoration:none;letter-spacing:-.02em;margin-bottom:20px}
 
-    .lg-card h1{font-size:26px;font-weight:900;color:var(--d);text-align:center;letter-spacing:-.02em;margin-bottom:6px}
+    .lg-lock-icon{text-align:center;margin-bottom:16px}
+
+    .lg-card h1{font-size:22px;font-weight:900;color:var(--d);text-align:center;letter-spacing:-.02em;margin-bottom:6px}
     .lg-sub{text-align:center;font-size:14px;color:var(--g);margin-bottom:28px}
 
-    /* Messages */
     .lg-msg{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;font-size:13px;font-weight:500;margin-bottom:20px}
-    .lg-msg-ok{background:#dcfce7;color:#166534;border:1px solid #bbf7d0}
     .lg-msg-err{background:#fee2e2;color:#991b1b;border:1px solid #fecaca}
     .lg-msg svg{flex-shrink:0}
 
-    /* Form */
     .lg-form{display:flex;flex-direction:column;gap:18px}
 
     .lg-field{display:flex;flex-direction:column;gap:6px}
@@ -112,53 +95,51 @@
     .lg-input-wrap input:focus{outline:none;border-color:var(--p);background:var(--w);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
     .lg-input-wrap input::placeholder{color:#94a3b8}
 
-    .lg-row{display:flex;justify-content:space-between;align-items:center}
-    .lg-check{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--g);cursor:pointer;user-select:none}
-    .lg-check input{width:16px;height:16px;border-radius:4px;cursor:pointer;accent-color:var(--p)}
-
     .lg-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--p),var(--s));color:var(--w);border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;transition:all .25s;box-shadow:0 8px 24px rgba(37,99,235,.3);font-family:inherit;margin-top:4px}
     .lg-btn:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(37,99,235,.4)}
     .lg-btn:active{transform:translateY(0)}
 
     .lg-footer{text-align:center;margin-top:24px;font-size:13px;color:var(--g)}
-    .lg-footer a{color:var(--p);font-weight:600;text-decoration:none;margin-left:3px}
+    .lg-footer a{color:var(--p);font-weight:600;text-decoration:none}
     .lg-footer a:hover{text-decoration:underline}
 
     @@media(max-width:480px){
         .lg-center{padding:16px}
         .lg-card{padding:28px 22px;border-radius:20px}
-        .lg-card h1{font-size:22px}
+        .lg-card h1{font-size:20px}
     }
 </style>
 
 @code {
     private string errorMessage = string.Empty;
-    private string successMessage = string.Empty;
+    private string returnUrl = "/dashboard";
+    private string rememberMe = "false";
 
     protected override void OnInitialized()
     {
         var uri = new Uri(Navigation.Uri);
         var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
-        var error = query["error"];
-        var success = query["success"];
         
+        var error = query["error"];
         if (!string.IsNullOrEmpty(error))
         {
             errorMessage = error switch
             {
-                "invalid" => "Nesprávne prihlasovacie údaje.",
-                "locked" => "Účet je dočasne uzamknutý. Skúste neskôr.",
-                _ => "Chyba pri prihlasovaní."
+                "invalid_code" => "Nesprávny overovací kód. Skúste to znova.",
+                _ => "Chyba pri overení."
             };
         }
 
-        if (!string.IsNullOrEmpty(success))
+        var ret = query["returnUrl"];
+        if (!string.IsNullOrEmpty(ret))
         {
-            successMessage = success switch
-            {
-                "registered" => "Registrácia bola úspešná! Prihláste sa.",
-                _ => ""
-            };
+            returnUrl = ret;
+        }
+
+        var rm = query["rememberMe"];
+        if (!string.IsNullOrEmpty(rm))
+        {
+            rememberMe = rm;
         }
     }
 }

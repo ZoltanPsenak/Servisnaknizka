@@ -27,6 +27,7 @@ namespace Servisnaknizka.Models
         public virtual ICollection<Vehicle> OwnedVehicles { get; set; } = new List<Vehicle>();
         public virtual ICollection<Permission> ServicePermissions { get; set; } = new List<Permission>();
         public virtual ICollection<ServiceRecord> CreatedServiceRecords { get; set; } = new List<ServiceRecord>();
+        public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
         /// <summary>
         /// Servisná prevádzka prislúchajúca tomuto používateľovi (ak má rolu Service)
         /// </summary>

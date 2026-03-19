@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Servisnaknizka.Data;
 
@@ -11,9 +12,11 @@ using Servisnaknizka.Data;
 namespace Servisnaknizka.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260319074533_AddNotificationsAndReminders")]
+    partial class AddNotificationsAndReminders
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -162,13 +165,6 @@ namespace Servisnaknizka.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Category")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(30)
-                        .HasColumnType("varchar(30)")
-                        .HasDefaultValue("service");
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -480,18 +476,12 @@ namespace Servisnaknizka.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<DateTime?>("EmissionExpiry")
-                        .HasColumnType("datetime2");
-
                     b.Property<int?>("EnginePower")
                         .HasColumnType("int");
 
                     b.Property<string>("EngineType")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime?>("InsuranceExpiry")
-                        .HasColumnType("datetime2");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -514,9 +504,6 @@ namespace Servisnaknizka.Migrations
 
                     b.Property<int>("ServiceIntervalMonths")
                         .HasColumnType("int");
-
-                    b.Property<DateTime?>("StkExpiry")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("TransferCode")
                         .HasMaxLength(8)

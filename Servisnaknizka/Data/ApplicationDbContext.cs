@@ -18,6 +18,7 @@ namespace Servisnaknizka.Data
         public DbSet<Vehicle> Vehicles { get; set; }
         public DbSet<ServiceRecord> ServiceRecords { get; set; }
         public DbSet<Permission> Permissions { get; set; }        public DbSet<Service> Services { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -102,6 +103,50 @@ namespace Servisnaknizka.Data
                     .HasColumnType("datetime2");
 
                 entity.HasIndex(v => v.TransferCode);
+
+                entity.Property(v => v.NextServiceDate)
+                    .HasColumnType("datetime2");
+
+                entity.Property(v => v.StkExpiry)
+                    .HasColumnType("datetime2");
+
+                entity.Property(v => v.EmissionExpiry)
+                    .HasColumnType("datetime2");
+
+                entity.Property(v => v.InsuranceExpiry)
+                    .HasColumnType("datetime2");
+            });
+
+            // SQL Server špecifické nastavenia pre Notification
+            builder.Entity<Notification>(entity =>
+            {
+                entity.ToTable("Notifications");
+
+                entity.Property(n => n.Title)
+                    .HasMaxLength(100)
+                    .IsRequired()
+                    .HasColumnType("nvarchar(100)");
+
+                entity.Property(n => n.Message)
+                    .HasMaxLength(500)
+                    .IsRequired()
+                    .HasColumnType("nvarchar(500)");
+
+                entity.Property(n => n.Type)
+                    .HasMaxLength(30)
+                    .IsRequired()
+                    .HasColumnType("varchar(30)");
+
+                entity.Property(n => n.Category)
+                    .HasMaxLength(30)
+                    .HasDefaultValue("service")
+                    .HasColumnType("varchar(30)");
+
+                entity.Property(n => n.CreatedAt)
+                    .HasDefaultValueSql("GETUTCDATE()")
+                    .HasColumnType("datetime2");
+
+                entity.HasIndex(n => new { n.UserId, n.IsRead });
             });
 
             // SQL Server �pecifick� nastavenia pre ServiceRecord
@@ -254,6 +299,20 @@ namespace Servisnaknizka.Data
                 .WithOne(u => u.ServiceProfile)
                 .HasForeignKey<Service>(s => s.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // Notification -> User
+            builder.Entity<Notification>()
+                .HasOne(n => n.User)
+                .WithMany(u => u.Notifications)
+                .HasForeignKey(n => n.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Notification -> Vehicle (optional)
+            builder.Entity<Notification>()
+                .HasOne(n => n.Vehicle)
+                .WithMany()
+                .HasForeignKey(n => n.VehicleId)
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }
