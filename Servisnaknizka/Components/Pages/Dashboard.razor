@@ -358,7 +358,7 @@ else
                         <p>Prehľad vašich vozidiel a servisnej histórie</p>
                     </div>
                     <div class="cd-hero-right">
-                        <button @onclick="() => showClaimVehicleForm = !showClaimVehicleForm" class="cd-btn cd-btn-ghost" style="color:white;border-color:rgba(255,255,255,0.3);">
+                        <button @onclick="() => showClaimVehicleForm = !showClaimVehicleForm" class="cd-btn cd-btn-hero-ghost">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
                             Prevziať vozidlo
                         </button>
@@ -2750,9 +2750,9 @@ else
     .cd-btn-danger:hover{background:#b91c1c}
 
     /* Notification Bell */
-    .cd-notif-btn{position:relative;background:none;border:none;cursor:pointer;padding:8px;border-radius:10px;color:white;transition:all .2s}
-    .cd-notif-btn:hover{background:rgba(255,255,255,0.15);color:white}
-    .cd-notif-badge{position:absolute;top:2px;right:2px;width:18px;height:18px;background:#ef4444;border-radius:50%;font-size:10px;font-weight:700;color:white;display:flex;align-items:center;justify-content:center;border:2px solid #1e3a8a}
+    .cd-notif-btn{position:relative;background:none;border:none;cursor:pointer;padding:8px;border-radius:10px;color:var(--cd-gray);transition:all .2s}
+    .cd-notif-btn:hover{background:var(--cd-light);color:var(--cd-primary)}
+    .cd-notif-badge{position:absolute;top:2px;right:2px;width:18px;height:18px;background:#ef4444;border-radius:50%;font-size:10px;font-weight:700;color:white;display:flex;align-items:center;justify-content:center;border:2px solid white}
     .cd-notif-panel{position:fixed;top:0;right:0;width:400px;max-width:100vw;height:100vh;background:white;box-shadow:-10px 0 40px rgba(0,0,0,.15);z-index:1001;display:flex;flex-direction:column;animation:slideIn .3s ease}
     .cd-notif-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:1000}
     @@keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
@@ -2786,6 +2786,133 @@ else
     .cd-reminder-section{padding:16px;background:#f8fafc;border-radius:12px;border:1px solid #e2e8f0;margin-bottom:12px}
     .cd-reminder-section-title{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:#0f172a;margin:0 0 10px 0}
     .cd-reminder-hint{font-size:12px;color:#64748b;margin:8px 0 0 0}
+
+    /* Hero ghost button (on dark background) */
+    .cd-btn-hero-ghost {
+        background: transparent;
+        color: white;
+        border: 1.5px solid rgba(255,255,255,0.4);
+    }
+    .cd-btn-hero-ghost:hover {
+        background: rgba(255,255,255,0.15);
+        border-color: rgba(255,255,255,0.6);
+    }
+
+    /* Hero right buttons */
+    .cd-hero-right {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    /* RESPONSIVE - Mobile improvements */
+    @@media (max-width: 768px) {
+        .cd-nav-right {
+            gap: 8px;
+        }
+        .cd-nav-right .cd-user-pill {
+            padding: 4px 8px 4px 4px;
+        }
+        .cd-avatar {
+            width: 32px;
+            height: 32px;
+            font-size: 12px;
+        }
+        .cd-btn-logout {
+            padding: 6px 10px;
+            font-size: 12px;
+        }
+        .cd-notif-panel {
+            width: 100vw;
+        }
+        .cd-hero-right .cd-btn {
+            padding: 8px 16px;
+            font-size: 13px;
+        }
+        .cd-record-card {
+            flex-direction: column;
+        }
+        .cd-rc-date {
+            flex-direction: row;
+            min-width: auto;
+            gap: 6px;
+        }
+        .cd-rc-day {
+            font-size: 18px;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .cd-nav-inner {
+            padding: 0 12px;
+        }
+        .cd-container {
+            padding: 0 12px;
+        }
+        .cd-brand span {
+            display: none;
+        }
+        .cd-hero-card {
+            padding: 24px 20px;
+        }
+        .cd-hero-card h1 {
+            font-size: 20px;
+        }
+        .cd-hero-card p {
+            font-size: 13px;
+        }
+        .cd-hero-right {
+            width: 100%;
+        }
+        .cd-hero-right .cd-btn {
+            flex: 1;
+            justify-content: center;
+            min-width: 0;
+        }
+        .cd-section-card {
+            padding: 16px;
+        }
+        .cd-stat-card {
+            padding: 16px;
+        }
+        .cd-stat-value {
+            font-size: 22px;
+        }
+        .cd-modal-2fa, .cd-modal-reminder {
+            max-width: 100%;
+            border-radius: 16px;
+        }
+        .cd-modal-overlay {
+            padding: 12px;
+        }
+        .cd-form-card {
+            padding: 16px;
+        }
+        .cd-interval-options {
+            gap: 6px;
+        }
+        .cd-interval-opt {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+    }
+
+    @@media (max-width: 360px) {
+        .cd-nav-right {
+            gap: 4px;
+        }
+        .cd-btn-logout {
+            padding: 6px 8px;
+        }
+        .cd-hero-right {
+            flex-direction: column;
+        }
+        .cd-hero-right .cd-btn {
+            width: 100%;
+        }
+    }
 </style>
 
 @code {

@@ -1,1114 +1,474 @@
 ﻿@page "/"
 @layout EmptyLayout
+@rendermode InteractiveServer
 
 <PageTitle>Domov - Servisná knižka</PageTitle>
 
-<div class="landing-page">
-    <!-- NAVIGATION -->
-    <nav class="navbar">
-        <div class="container">
-            <div class="nav-brand">
-                <span class="brand-text">Servisná Knižka</span>
-            </div>
-            <div class="nav-menu">
-                <a href="#features" class="nav-item">Funkcie</a>
-                <a href="#about" class="nav-item">Aplikácia</a>
-                <a href="/login" class="btn-login">Prihlásenie</a>
+<div class="lp">
+    <!-- NAV -->
+    <nav class="lp-nav">
+        <div class="lp-wrap">
+            <a href="/" class="lp-logo">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                <span>Servisná Knižka</span>
+            </a>
+            <button class="lp-burger" @onclick="() => menuOpen = !menuOpen" aria-label="Menu">
+                @if (menuOpen)
+                {
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                }
+                else
+                {
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+                }
+            </button>
+            <div class="lp-links @(menuOpen ? "open" : "")">
+                <a href="#funkcie" @onclick="() => menuOpen = false">Funkcie</a>
+                <a href="#o-nas" @onclick="() => menuOpen = false">O aplikácii</a>
+                <a href="/login" class="lp-cta-link">Prihlásiť sa</a>
             </div>
         </div>
     </nav>
 
-    <!-- HERO SECTION -->
-    <section class="hero">
-        <div class="hero-bg">
-            <div class="shape shape-1"></div>
-            <div class="shape shape-2"></div>
-            <div class="shape shape-3"></div>
-        </div>
-        <div class="container hero-container">
-            <div class="hero-content">
-                <h1 class="hero-title">
-                    Vaša digitálna<br/>
-                    <span class="gradient-text">servisná knižka</span>
-                </h1>
-                <p class="hero-description">
-                    Kompletná evidencia údržby vozidla na jednom mieste. 
-                    Prehľadná história, automatické pripomienky a prístup kedykoľvek, odkiaľkoľvek.
-                </p>
-                <div class="hero-buttons">
-                    <a href="/login" class="btn btn-primary">
-                        <span>Začať používať</span>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M5 12h14M12 5l7 7-7 7"/>
-                        </svg>
-                    </a>
-                    <a href="#features" class="btn btn-outline">
-                        <span>Zistiť viac</span>
-                    </a>
-                </div>
-                
-                <!-- Stats -->
-                <div class="hero-stats">
-                    <div class="stat">
-                        <div class="stat-number">150+</div>
-                        <div class="stat-label">Aktívnych používateľov</div>
-                    </div>
-                    <div class="stat">
-                        <div class="stat-number">800+</div>
-                        <div class="stat-label">Servisných záznamov</div>
-                    </div>
-                    <div class="stat">
-                        <div class="stat-number">99.9%</div>
-                        <div class="stat-label">Dostupnosť</div>
-                    </div>
-                </div>
+    <!-- HERO -->
+    <section class="lp-hero">
+        <div class="lp-wrap lp-hero-inner">
+            <span class="lp-pill">Digitálna servisná knižka</span>
+            <h1>Všetka údržba vášho auta<br/><em>na jednom mieste</em></h1>
+            <p>Prehľadná história servisu, automatické pripomienky na STK, emisie a poistenie. Prístupné z&nbsp;mobilu aj&nbsp;počítača.</p>
+            <div class="lp-hero-btns">
+                <a href="/register" class="lp-btn lp-btn-w">Vytvoriť účet zadarmo</a>
+                <a href="/login" class="lp-btn lp-btn-o">Prihlásiť sa</a>
             </div>
-            
-            <div class="hero-visual">
-                <div class="mockup-card">
-                    <div class="mockup-header">
-                        <div class="mockup-dots">
-                            <span></span><span></span><span></span>
-                        </div>
+        </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section id="funkcie" class="lp-features">
+        <div class="lp-wrap">
+            <h2>Čo všetko zvládne?</h2>
+            <div class="lp-grid">
+                <div class="lp-card">
+                    <div class="lp-icon blue">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/></svg>
                     </div>
-                    <div class="mockup-content">
-                        <div class="mockup-item">
-                            <div class="mockup-icon">🚙</div>
-                            <div class="mockup-text">
-                                <div class="mockup-title">Volkswagen Golf</div>
-                                <div class="mockup-subtitle">BA-123-AB • 2019</div>
-                            </div>
-                            <div class="mockup-badge success">Aktívny</div>
-                        </div>
-                        <div class="mockup-item">
-                            <div class="mockup-icon">🔧</div>
-                            <div class="mockup-text">
-                                <div class="mockup-title">Posledný servis</div>
-                                <div class="mockup-subtitle">Pred 15 dňami • 125 000 km</div>
-                            </div>
-                        </div>
-                        <div class="mockup-chart">
-                            <div class="chart-bar" style="height: 60%;"></div>
-                            <div class="chart-bar" style="height: 80%;"></div>
-                            <div class="chart-bar" style="height: 45%;"></div>
-                            <div class="chart-bar" style="height: 90%;"></div>
-                            <div class="chart-bar" style="height: 70%;"></div>
-                        </div>
+                    <h3>História servisu</h3>
+                    <p>Kompletný prehľad všetkých opráv, výmen a údržby. Nič sa nestratí.</p>
+                </div>
+                <div class="lp-card">
+                    <div class="lp-icon purple">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
                     </div>
+                    <h3>Pripomienky</h3>
+                    <p>Upozornenia na STK, emisnú kontrolu, poistenie a pravidelný servis.</p>
+                </div>
+                <div class="lp-card">
+                    <div class="lp-icon green">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    </div>
+                    <h3>Export do PDF</h3>
+                    <p>Profesionálny report histórie vozidla na pár kliknutí.</p>
+                </div>
+                <div class="lp-card">
+                    <div class="lp-icon orange">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    </div>
+                    <h3>Pre autoservisy</h3>
+                    <p>Správa klientskych vozidiel a jednoduchý prístup k servisným záznamom.</p>
+                </div>
+                <div class="lp-card">
+                    <div class="lp-icon red">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    </div>
+                    <h3>Bezpečné dáta</h3>
+                    <p>Šifrovaná komunikácia, zálohy a dvojfaktorové overenie.</p>
+                </div>
+                <div class="lp-card">
+                    <div class="lp-icon cyan">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+                    </div>
+                    <h3>Prevod vozidla</h3>
+                    <p>Jednoduché odovzdanie vozidla novému majiteľovi vrátane celej histórie.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- FEATURES SECTION -->
-    <section id="features" class="features">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-tag">Funkcie</span>
-                <h2 class="section-title">Všetko čo potrebujete</h2>
-                <p class="section-subtitle">Komplexné riešenie pre správu vášho vozidla</p>
-            </div>
-
-            <div class="features-grid">
-                <!-- Feature 1 -->
-                <div class="feature-card">
-                    <div class="feature-icon blue">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                            <path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>
-                        </svg>
-                    </div>
-                    <h3 class="feature-title">História vozidla</h3>
-                    <p class="feature-text">Kompletný prehľad všetkých servisných záznamov, údržby a opráv na jednom mieste.</p>
-                    <ul class="feature-list">
-                        <li>Chronologický zoznam záznamov</li>
-                        <li>Detaily každého servisu</li>
-                        <li>Pripojené fotky a dokumenty</li>
-                    </ul>
+    <!-- HOW IT WORKS -->
+    <section id="o-nas" class="lp-how">
+        <div class="lp-wrap">
+            <h2>Ako to funguje?</h2>
+            <div class="lp-steps">
+                <div class="lp-step">
+                    <div class="lp-step-num">1</div>
+                    <h3>Zaregistrujte sa</h3>
+                    <p>Vytvorte si bezplatný účet za pár sekúnd.</p>
                 </div>
-
-                <!-- Feature 2 -->
-                <div class="feature-card highlighted">
-                    <div class="featured-badge">Najpopulárnejšie</div>
-                    <div class="feature-icon purple">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"/>
-                            <path d="M12 6v6l4 2"/>
-                        </svg>
-                    </div>
-                    <h3 class="feature-title">Automatické pripomienky</h3>
-                    <p class="feature-text">Nikdy nezabudnite na dôležitý servis. Dostanete notifikáciu v správny čas.</p>
-                    <ul class="feature-list">
-                        <li>Pripomienky podľa km</li>
-                        <li>Časové upozornenia</li>
-                        <li>STK a emisná kontrola</li>
-                    </ul>
+                <div class="lp-step">
+                    <div class="lp-step-num">2</div>
+                    <h3>Pridajte vozidlo</h3>
+                    <p>Zadajte údaje o vozidle — značka, model, VIN, ŠPZ.</p>
                 </div>
-
-                <!-- Feature 3 -->
-                <div class="feature-card">
-                    <div class="feature-icon green">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                            <polyline points="7 10 12 15 17 10"/>
-                            <line x1="12" y1="15" x2="12" y2="3"/>
-                        </svg>
-                    </div>
-                    <h3 class="feature-title">Export do PDF</h3>
-                    <p class="feature-text">Vytvorte profesionálny report histórie vozidla pre predaj alebo archív.</p>
-                    <ul class="feature-list">
-                        <li>Prehľadný dizajn</li>
-                        <li>Všetky detaily zahrnuté</li>
-                        <li>Okamžité stiahnutie</li>
-                    </ul>
-                </div>
-
-                <!-- Feature 4 -->
-                <div class="feature-card">
-                    <div class="feature-icon orange">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                            <circle cx="9" cy="7" r="4"/>
-                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                        </svg>
-                    </div>
-                    <h3 class="feature-title">Pre autoservisy</h3>
-                    <p class="feature-text">Efektívna správa klientskych vozidiel a rýchle pridávanie servisných záznamov.</p>
-                    <ul class="feature-list">
-                        <li>Prístup k povoleným vozidlám</li>
-                        <li>Rýchly formulár</li>
-                        <li>História všetkých prác</li>
-                    </ul>
-                </div>
-
-                <!-- Feature 5 -->
-                <div class="feature-card">
-                    <div class="feature-icon red">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                        </svg>
-                    </div>
-                    <h3 class="feature-title">Bezpečnosť dát</h3>
-                    <p class="feature-text">Vaše údaje sú šifrované a chránené podľa najnovších bezpečnostných štandardov.</p>
-                    <ul class="feature-list">
-                        <li>SSL šifrovanie</li>
-                        <li>Pravidelné zálohy</li>
-                        <li>GDPR compliant</li>
-                    </ul>
-                </div>
-
-                <!-- Feature 6 -->
-                <div class="feature-card">
-                    <div class="feature-icon cyan">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
-                            <line x1="8" y1="21" x2="16" y2="21"/>
-                            <line x1="12" y1="17" x2="12" y2="21"/>
-                        </svg>
-                    </div>
-                    <h3 class="feature-title">Prístup odkiaľkoľvek</h3>
-                    <p class="feature-text">Webová aplikácia funguje na všetkých zariadeniach - PC, tablet, mobil.</p>
-                    <ul class="feature-list">
-                        <li>Responzívny dizajn</li>
-                        <li>Žiadna inštalácia</li>
-                        <li>Všetky platformy</li>
-                    </ul>
+                <div class="lp-step">
+                    <div class="lp-step-num">3</div>
+                    <h3>Evidujte servisy</h3>
+                    <p>Pridávajte záznamy a nechajte si pripomínať termíny.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- ABOUT SECTION -->
-    <section id="about" class="about">
-        <div class="container">
-            <div class="about-content">
-                <div class="about-text">
-                    <span class="section-tag">O aplikácii</span>
-                    <h2 class="section-title">Prečo Servisná knižka?</h2>
-                    <p class="about-description">
-                        Moderné vozidlá vyžadujú pravidelnú údržbu. S našou aplikáciou máte všetky 
-                        dôležité informácie vždy po ruke. Nemusíte hľadať papierové doklady, 
-                        všetko je uložené bezpečne v cloude.
-                    </p>
-                    <div class="about-benefits">
-                        <div class="benefit">
-                            <div class="benefit-icon">✓</div>
-                            <div class="benefit-text">
-                                <strong>Jednoduchosť</strong>
-                                <span>Intuitívne rozhranie pre každého</span>
-                            </div>
-                        </div>
-                        <div class="benefit">
-                            <div class="benefit-icon">✓</div>
-                            <div class="benefit-text">
-                                <strong>Spoľahlivosť</strong>
-                                <span>Vaše dáta sú vždy v bezpečí</span>
-                            </div>
-                        </div>
-                        <div class="benefit">
-                            <div class="benefit-icon">✓</div>
-                            <div class="benefit-text">
-                                <strong>Modernosť</strong>
-                                <span>Najnovšie technológie a dizajn</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="about-stats-visual">
-                    <div class="stats-card">
-                        <div class="stats-item">
-                            <div class="stats-icon">👥</div>
-                            <div class="stats-number">1500+</div>
-                            <div class="stats-label">Používateľov</div>
-                        </div>
-                        <div class="stats-item">
-                            <div class="stats-icon">🚗</div>
-                            <div class="stats-number">3200+</div>
-                            <div class="stats-label">Vozidiel</div>
-                        </div>
-                        <div class="stats-item">
-                            <div class="stats-icon">📋</div>
-                            <div class="stats-number">8000+</div>
-                            <div class="stats-label">Záznamov</div>
-                        </div>
-                        <div class="stats-item">
-                            <div class="stats-icon">⭐</div>
-                            <div class="stats-number">4.8/5</div>
-                            <div class="stats-label">Hodnotenie</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- CTA SECTION -->
-    <section class="cta">
-        <div class="container">
-            <div class="cta-content">
-                <h2 class="cta-title">Pripravení začať?</h2>
-                <p class="cta-text">
-                    Vytvorte si účet zadarmo a začnite spravovať svoje vozidlo profesionálne
-                </p>
-                <div class="cta-buttons">
-                    <a href="/login" class="btn btn-white">
-                        <span>Prihlásiť sa</span>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M5 12h14M12 5l7 7-7 7"/>
-                        </svg>
-                    </a>
-                </div>
-            </div>
+    <!-- CTA -->
+    <section class="lp-cta">
+        <div class="lp-wrap lp-cta-inner">
+            <h2>Začnite ešte dnes</h2>
+            <p>Bezplatná registrácia, bez záväzkov.</p>
+            <a href="/register" class="lp-btn lp-btn-w">Vytvoriť účet</a>
         </div>
     </section>
 
     <!-- FOOTER -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-brand">
-                    <span class="brand-text">Servisná Knižka</span>
-                </div>
-                <p class="footer-text">
-                    Moderné riešenie pre správu servisnej dokumentácie vášho vozidla.
-                </p>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2026 Servisná Knižka. Všetky práva vyhradené.</p>
-            </div>
+    <footer class="lp-footer">
+        <div class="lp-wrap">
+            <p>&copy; 2026 Servisná Knižka — Všetky práva vyhradené</p>
         </div>
     </footer>
 </div>
 
 <style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
+    /* ===== RESET & BASE ===== */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-    :root {
-        --primary: #2563eb;
-        --primary-dark: #1d4ed8;
-        --secondary: #0ea5e9;
-        --blue: #3b82f6;
-        --purple: #8b5cf6;
-        --green: #22c55e;
-        --orange: #f97316;
-        --red: #ef4444;
-        --cyan: #06b6d4;
-        --dark: #0f172a;
-        --gray: #64748b;
-        --light: #f1f5f9;
-        --white: #ffffff;
-    }
-
-    .landing-page {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    .lp {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        color: #1e293b;
         overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
     }
 
-    .container {
-        max-width: 1200px;
+    .lp-wrap {
+        max-width: 1080px;
         margin: 0 auto;
-        padding: 0 24px;
+        padding: 0 20px;
     }
 
-    /* NAVBAR */
-    .navbar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
+    /* ===== NAV ===== */
+    .lp-nav {
+        position: fixed; top: 0; left: 0; right: 0;
         z-index: 100;
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-        padding: 16px 0;
+        background: rgba(255,255,255,0.92);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid #f1f5f9;
     }
 
-    .navbar .container {
+    .lp-nav .lp-wrap {
         display: flex;
+        align-items: center;
         justify-content: space-between;
-        align-items: center;
+        height: 60px;
     }
 
-    .nav-brand {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        font-size: 20px;
-        font-weight: 800;
-        color: var(--dark);
+    .lp-logo {
+        display: flex; align-items: center; gap: 10px;
+        text-decoration: none; color: #0f172a;
+        font-weight: 800; font-size: 17px;
     }
 
-    .brand-icon {
-        font-size: 28px;
+    .lp-logo svg { color: #2563eb; }
+
+    .lp-links {
+        display: flex; align-items: center; gap: 28px;
     }
 
-    .nav-menu {
-        display: flex;
-        align-items: center;
-        gap: 32px;
+    .lp-links a {
+        text-decoration: none; font-size: 14px; font-weight: 500;
+        color: #64748b; transition: color 0.2s;
     }
 
-    .nav-item {
-        color: var(--gray);
-        text-decoration: none;
-        font-weight: 500;
-        font-size: 15px;
-        transition: color 0.2s;
+    .lp-links a:hover { color: #0f172a; }
+
+    .lp-cta-link {
+        background: #2563eb !important; color: white !important;
+        padding: 8px 20px; border-radius: 8px; font-weight: 600 !important;
+        transition: background 0.2s !important;
     }
 
-    .nav-item:hover {
-        color: var(--dark);
+    .lp-cta-link:hover { background: #1d4ed8 !important; }
+
+    .lp-burger {
+        display: none; background: none; border: none;
+        cursor: pointer; padding: 6px; color: #334155; border-radius: 6px;
     }
 
-    .btn-login {
-        background: var(--primary);
-        color: white;
-        padding: 10px 24px;
-        border-radius: 10px;
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 15px;
-        transition: all 0.3s;
-    }
+    .lp-burger:hover { background: #f1f5f9; }
 
-    .btn-login:hover {
-        background: var(--primary-dark);
-        transform: translateY(-2px);
-        box-shadow: 0 10px 30px rgba(37, 99, 235, 0.3);
-    }
-
-    /* HERO */
-    .hero {
-        min-height: 100vh;
-        padding: 120px 0 80px;
-        position: relative;
-        background: linear-gradient(135deg, #1e40af 0%, #0ea5e9 100%);
-        overflow: hidden;
-    }
-
-    .hero-bg {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        overflow: hidden;
-    }
-
-    .shape {
-        position: absolute;
-        border-radius: 50%;
-        filter: blur(80px);
-        opacity: 0.3;
-        animation: float 20s infinite ease-in-out;
-    }
-
-    .shape-1 {
-        width: 500px;
-        height: 500px;
-        background: #06b6d4;
-        top: -200px;
-        right: -100px;
-    }
-
-    .shape-2 {
-        width: 400px;
-        height: 400px;
-        background: #3b82f6;
-        bottom: -150px;
-        left: -100px;
-        animation-delay: -5s;
-    }
-
-    .shape-3 {
-        width: 300px;
-        height: 300px;
-        background: #22c55e;
-        top: 50%;
-        left: 50%;
-        animation-delay: -10s;
-    }
-
-    @@keyframes float {
-        0%, 100% { transform: translate(0, 0); }
-        33% { transform: translate(30px, -30px); }
-        66% { transform: translate(-20px, 20px); }
-    }
-
-    .hero-container {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 60px;
-        align-items: center;
-        position: relative;
-        z-index: 1;
-    }
-
-    .hero-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        background: rgba(255, 255, 255, 0.2);
-        backdrop-filter: blur(10px);
-        padding: 8px 20px;
-        border-radius: 999px;
-        color: white;
-        font-size: 14px;
-        font-weight: 600;
-        margin-bottom: 24px;
-        border: 1px solid rgba(255, 255, 255, 0.3);
-    }
-
-    .badge-icon {
-        font-size: 16px;
-    }
-
-    .hero-title {
-        font-size: 64px;
-        font-weight: 900;
-        color: white;
-        line-height: 1.1;
-        margin-bottom: 24px;
-        letter-spacing: -0.02em;
-    }
-
-    .gradient-text {
-        background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.8) 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-    }
-
-    .hero-description {
-        font-size: 20px;
-        color: rgba(255, 255, 255, 0.9);
-        line-height: 1.7;
-        margin-bottom: 40px;
-        font-weight: 400;
-    }
-
-    .hero-buttons {
-        display: flex;
-        gap: 16px;
-        margin-bottom: 60px;
-    }
-
-    .btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        padding: 16px 32px;
-        border-radius: 12px;
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 16px;
-        transition: all 0.3s;
-        border: 2px solid transparent;
-    }
-
-    .btn-primary {
-        background: white;
-        color: var(--primary);
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-    }
-
-    .btn-primary:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
-    }
-
-    .btn-outline {
-        background: transparent;
-        color: white;
-        border-color: rgba(255, 255, 255, 0.4);
-    }
-
-    .btn-outline:hover {
-        background: rgba(255, 255, 255, 0.1);
-        transform: translateY(-3px);
-    }
-
-    .hero-stats {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 32px;
-    }
-
-    .stat {
+    /* ===== HERO ===== */
+    .lp-hero {
+        padding: 140px 0 100px;
+        background: linear-gradient(160deg, #1e3a8a 0%, #2563eb 50%, #0ea5e9 100%);
         text-align: center;
-    }
-
-    .stat-number {
-        font-size: 36px;
-        font-weight: 800;
         color: white;
-        margin-bottom: 8px;
     }
 
-    .stat-label {
-        font-size: 14px;
-        color: rgba(255, 255, 255, 0.8);
-        font-weight: 500;
-    }
+    .lp-hero-inner { max-width: 680px; }
 
-    /* MOCKUP */
-    .hero-visual {
-        position: relative;
-    }
-
-    .mockup-card {
-        background: white;
-        border-radius: 24px;
-        box-shadow: 0 50px 100px rgba(0, 0, 0, 0.3);
-        overflow: hidden;
-        transform: perspective(1000px) rotateY(-5deg) rotateX(5deg);
-        transition: transform 0.3s;
-    }
-
-    .mockup-card:hover {
-        transform: perspective(1000px) rotateY(0deg) rotateX(0deg);
-    }
-
-    .mockup-header {
-        background: linear-gradient(135deg, #1e40af, #0ea5e9);
-        padding: 16px;
-    }
-
-    .mockup-dots {
-        display: flex;
-        gap: 8px;
-    }
-
-    .mockup-dots span {
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.3);
-    }
-
-    .mockup-content {
-        padding: 32px;
-    }
-
-    .mockup-item {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-        padding: 20px;
-        background: #f8fafc;
-        border-radius: 16px;
-        margin-bottom: 16px;
-    }
-
-    .mockup-icon {
-        font-size: 32px;
-        width: 56px;
-        height: 56px;
-        background: white;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    }
-
-    .mockup-text {
-        flex: 1;
-    }
-
-    .mockup-title {
-        font-size: 15px;
-        font-weight: 700;
-        color: var(--dark);
-        margin-bottom: 4px;
-    }
-
-    .mockup-subtitle {
-        font-size: 13px;
-        color: var(--gray);
-    }
-
-    .mockup-badge {
-        padding: 6px 14px;
-        border-radius: 999px;
-        font-size: 12px;
-        font-weight: 700;
-    }
-
-    .mockup-badge.success {
-        background: #d1fae5;
-        color: #065f46;
-    }
-
-    .mockup-chart {
-        display: flex;
-        align-items: flex-end;
-        gap: 12px;
-        height: 120px;
-        padding: 20px;
-        background: #f8fafc;
-        border-radius: 16px;
-    }
-
-    .chart-bar {
-        flex: 1;
-        background: linear-gradient(135deg, var(--primary), var(--secondary));
-        border-radius: 6px;
-        animation: growBar 1s ease-out;
-    }
-
-    @@keyframes growBar {
-        from { height: 0; }
-    }
-
-    /* FEATURES */
-    .features {
-        padding: 120px 0;
-        background: white;
-    }
-
-    .section-header {
-        text-align: center;
-        margin-bottom: 80px;
-    }
-
-    .section-tag {
+    .lp-pill {
         display: inline-block;
-        background: linear-gradient(135deg, var(--primary), var(--secondary));
-        color: white;
-        padding: 6px 16px;
+        background: rgba(255,255,255,0.15);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255,255,255,0.25);
+        padding: 6px 18px;
         border-radius: 999px;
         font-size: 13px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        margin-bottom: 16px;
+        font-weight: 600;
+        margin-bottom: 28px;
     }
 
-    .section-title {
+    .lp-hero h1 {
         font-size: 48px;
         font-weight: 900;
-        color: var(--dark);
-        margin-bottom: 16px;
-        letter-spacing: -0.02em;
-    }
-
-    .section-subtitle {
-        font-size: 20px;
-        color: var(--gray);
-        max-width: 600px;
-        margin: 0 auto;
-    }
-
-    .features-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 32px;
-    }
-
-    .feature-card {
-        background: white;
-        padding: 40px;
-        border-radius: 24px;
-        border: 2px solid #e2e8f0;
-        transition: all 0.3s;
-        position: relative;
-    }
-
-    .feature-card:hover {
-        transform: translateY(-8px);
-        border-color: var(--primary);
-        box-shadow: 0 20px 60px rgba(37, 99, 235, 0.15);
-    }
-
-    .feature-card.highlighted {
-        border-color: var(--primary);
-        background: linear-gradient(135deg, #ffffff 0%, #eff6ff 100%);
-    }
-
-    .featured-badge {
-        position: absolute;
-        top: -12px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: linear-gradient(135deg, var(--primary), var(--secondary));
-        color: white;
-        padding: 6px 16px;
-        border-radius: 999px;
-        font-size: 11px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-    }
-
-    .feature-icon {
-        width: 72px;
-        height: 72px;
-        border-radius: 16px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 24px;
-        color: white;
-    }
-
-    .feature-icon.blue { background: linear-gradient(135deg, #3b82f6, #2563eb); }
-    .feature-icon.purple { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
-    .feature-icon.green { background: linear-gradient(135deg, #22c55e, #16a34a); }
-    .feature-icon.orange { background: linear-gradient(135deg, #f97316, #ea580c); }
-    .feature-icon.red { background: linear-gradient(135deg, #ef4444, #dc2626); }
-    .feature-icon.cyan { background: linear-gradient(135deg, #06b6d4, #0891b2); }
-
-    .feature-title {
-        font-size: 22px;
-        font-weight: 800;
-        color: var(--dark);
-        margin-bottom: 12px;
-    }
-
-    .feature-text {
-        font-size: 15px;
-        color: var(--gray);
-        line-height: 1.7;
-        margin-bottom: 24px;
-    }
-
-    .feature-list {
-        list-style: none;
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-    }
-
-    .feature-list li {
-        font-size: 14px;
-        color: var(--gray);
-        padding-left: 24px;
-        position: relative;
-    }
-
-    .feature-list li::before {
-        content: "→";
-        position: absolute;
-        left: 0;
-        color: var(--primary);
-        font-weight: 700;
-    }
-
-    /* ABOUT */
-    .about {
-        padding: 120px 0;
-        background: var(--light);
-    }
-
-    .about-content {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 80px;
-        align-items: center;
-    }
-
-    .about-description {
-        font-size: 18px;
-        color: var(--gray);
-        line-height: 1.8;
-        margin: 24px 0 40px;
-    }
-
-    .about-benefits {
-        display: flex;
-        flex-direction: column;
-        gap: 24px;
-    }
-
-    .benefit {
-        display: flex;
-        gap: 16px;
-        align-items: flex-start;
-    }
-
-    .benefit-icon {
-        width: 40px;
-        height: 40px;
-        background: linear-gradient(135deg, var(--primary), var(--secondary));
-        color: white;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 700;
-        flex-shrink: 0;
-    }
-
-    .benefit-text {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-    }
-
-    .benefit-text strong {
-        font-size: 16px;
-        color: var(--dark);
-        font-weight: 700;
-    }
-
-    .benefit-text span {
-        font-size: 14px;
-        color: var(--gray);
-    }
-
-    .stats-card {
-        background: white;
-        border-radius: 24px;
-        padding: 40px;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 32px;
-    }
-
-    .stats-item {
-        text-align: center;
-    }
-
-    .stats-icon {
-        font-size: 40px;
-        margin-bottom: 12px;
-    }
-
-    .stats-number {
-        font-size: 32px;
-        font-weight: 800;
-        color: var(--dark);
-        margin-bottom: 8px;
-    }
-
-    .stats-label {
-        font-size: 14px;
-        color: var(--gray);
-        font-weight: 500;
-    }
-
-    /* CTA */
-    .cta {
-        padding: 100px 0;
-        background: linear-gradient(135deg, #1e40af 0%, #0ea5e9 100%);
-        position: relative;
-        overflow: hidden;
-    }
-
-    .cta::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
-    }
-
-    .cta-content {
-        text-align: center;
-        position: relative;
-        z-index: 1;
-    }
-
-    .cta-title {
-        font-size: 52px;
-        font-weight: 900;
-        color: white;
+        line-height: 1.15;
         margin-bottom: 20px;
-        letter-spacing: -0.02em;
+        letter-spacing: -0.03em;
     }
 
-    .cta-text {
-        font-size: 20px;
-        color: rgba(255, 255, 255, 0.9);
-        margin-bottom: 40px;
-        max-width: 600px;
+    .lp-hero h1 em {
+        font-style: normal;
+        opacity: 0.85;
+    }
+
+    .lp-hero p {
+        font-size: 18px;
+        line-height: 1.7;
+        opacity: 0.9;
+        margin-bottom: 36px;
+        max-width: 520px;
         margin-left: auto;
         margin-right: auto;
     }
 
-    .btn-white {
-        background: white;
-        color: var(--primary);
-        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+    .lp-hero-btns {
+        display: flex; gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
     }
 
-    .btn-white:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+    .lp-btn {
+        display: inline-flex; align-items: center; justify-content: center;
+        padding: 14px 28px;
+        border-radius: 10px;
+        font-size: 15px; font-weight: 700;
+        text-decoration: none;
+        transition: transform 0.15s, box-shadow 0.2s;
     }
 
-    /* FOOTER */
-    .footer {
-        background: var(--dark);
-        color: white;
-        padding: 60px 0 32px;
+    .lp-btn:hover { transform: translateY(-2px); }
+
+    .lp-btn-w {
+        background: white; color: #1e3a8a;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
     }
 
-    .footer-content {
+    .lp-btn-o {
+        background: transparent; color: white;
+        border: 2px solid rgba(255,255,255,0.4);
+    }
+
+    .lp-btn-o:hover { background: rgba(255,255,255,0.1); }
+
+    /* ===== FEATURES ===== */
+    .lp-features {
+        padding: 96px 0;
+        background: #f8fafc;
+    }
+
+    .lp-features h2, .lp-how h2 {
         text-align: center;
-        margin-bottom: 32px;
+        font-size: 32px;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 48px;
+        letter-spacing: -0.02em;
     }
 
-    .footer-brand {
-        display: inline-flex;
-        align-items: center;
-        gap: 12px;
-        font-size: 20px;
-        font-weight: 800;
+    .lp-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+
+    .lp-card {
+        background: white;
+        border-radius: 14px;
+        padding: 28px 24px;
+        border: 1px solid #e2e8f0;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .lp-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+    }
+
+    .lp-icon {
+        width: 48px; height: 48px;
+        border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
         margin-bottom: 16px;
     }
 
-    .footer-text {
-        color: #94a3b8;
-        font-size: 15px;
-        max-width: 400px;
-        margin: 0 auto;
+    .lp-icon.blue   { background: #dbeafe; color: #2563eb; }
+    .lp-icon.purple  { background: #ede9fe; color: #7c3aed; }
+    .lp-icon.green   { background: #dcfce7; color: #16a34a; }
+    .lp-icon.orange  { background: #ffedd5; color: #ea580c; }
+    .lp-icon.red     { background: #fee2e2; color: #dc2626; }
+    .lp-icon.cyan    { background: #cffafe; color: #0891b2; }
+
+    .lp-card h3 {
+        font-size: 16px; font-weight: 700; color: #0f172a;
+        margin-bottom: 8px;
     }
 
-    .footer-bottom {
-        padding-top: 32px;
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    .lp-card p {
+        font-size: 14px; color: #64748b; line-height: 1.6;
+    }
+
+    /* ===== HOW IT WORKS ===== */
+    .lp-how {
+        padding: 96px 0;
+        background: white;
+    }
+
+    .lp-steps {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 32px;
         text-align: center;
     }
 
-    .footer-bottom p {
-        color: #64748b;
-        font-size: 14px;
+    .lp-step-num {
+        width: 48px; height: 48px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #2563eb, #0ea5e9);
+        color: white;
+        font-size: 20px; font-weight: 800;
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 16px;
     }
 
-    /* RESPONSIVE */
-    @@media (max-width: 1024px) {
-        .hero-container,
-        .about-content {
-            grid-template-columns: 1fr;
-            gap: 48px;
-        }
-
-        .hero-visual {
-            order: -1;
-        }
-
-        .features-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-
-        .hero-title {
-            font-size: 48px;
-        }
-
-        .section-title,
-        .cta-title {
-            font-size: 40px;
-        }
+    .lp-step h3 {
+        font-size: 16px; font-weight: 700; color: #0f172a;
+        margin-bottom: 8px;
     }
 
+    .lp-step p {
+        font-size: 14px; color: #64748b; line-height: 1.6;
+    }
+
+    /* ===== CTA ===== */
+    .lp-cta {
+        padding: 80px 0;
+        background: linear-gradient(135deg, #1e3a8a, #2563eb);
+        text-align: center;
+        color: white;
+    }
+
+    .lp-cta h2 {
+        font-size: 32px; font-weight: 800;
+        margin-bottom: 12px;
+    }
+
+    .lp-cta p {
+        font-size: 16px; opacity: 0.85;
+        margin-bottom: 28px;
+    }
+
+    /* ===== FOOTER ===== */
+    .lp-footer {
+        padding: 28px 0;
+        background: #0f172a;
+        text-align: center;
+    }
+
+    .lp-footer p {
+        font-size: 13px; color: #64748b;
+    }
+
+    /* ===== RESPONSIVE ===== */
     @@media (max-width: 768px) {
-        .navbar .container {
+        .lp-burger { display: flex; align-items: center; }
+
+        .lp-links {
+            display: none;
+            position: absolute;
+            top: 60px; left: 0; right: 0;
             flex-direction: column;
-            gap: 16px;
+            background: white;
+            padding: 16px 20px;
+            gap: 4px;
+            border-bottom: 1px solid #e2e8f0;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
         }
 
-        .nav-menu {
-            width: 100%;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 16px;
+        .lp-links.open { display: flex; }
+
+        .lp-links a {
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 15px;
         }
 
-        .hero {
-            padding: 100px 0 60px;
+        .lp-links a:hover { background: #f8fafc; }
+
+        .lp-cta-link {
+            text-align: center; display: block !important;
+            margin-top: 4px;
         }
 
-        .hero-title {
-            font-size: 36px;
+        .lp-hero { padding: 110px 0 72px; }
+
+        .lp-hero h1 { font-size: 32px; }
+
+        .lp-hero p { font-size: 16px; }
+
+        .lp-grid {
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
         }
 
-        .hero-description {
-            font-size: 16px;
-        }
-
-        .hero-buttons {
-            flex-direction: column;
-        }
-
-        .btn {
-            width: 100%;
-            justify-content: center;
-        }
-
-        .hero-stats {
+        .lp-steps {
             grid-template-columns: 1fr;
-            gap: 24px;
+            gap: 28px;
         }
 
-        .features-grid {
-            grid-template-columns: 1fr;
-            gap: 24px;
+        .lp-features, .lp-how { padding: 64px 0; }
+
+        .lp-features h2, .lp-how h2 {
+            font-size: 26px;
+            margin-bottom: 32px;
         }
 
-        .section-title {
-            font-size: 32px;
-        }
+        .lp-cta h2 { font-size: 26px; }
+        .lp-cta { padding: 64px 0; }
+    }
 
-        .cta-title {
-            font-size: 32px;
-        }
+    @@media (max-width: 480px) {
+        .lp-hero h1 { font-size: 26px; }
+        .lp-hero p { font-size: 15px; }
+        .lp-pill { font-size: 12px; margin-bottom: 20px; }
 
-        .stats-card {
-            grid-template-columns: 1fr;
-            gap: 24px;
-        }
+        .lp-grid { grid-template-columns: 1fr; }
+
+        .lp-card { padding: 22px 20px; }
+
+        .lp-hero-btns { flex-direction: column; }
+        .lp-btn { width: 100%; }
+
+        .lp-features h2, .lp-how h2 { font-size: 22px; }
+        .lp-cta h2 { font-size: 22px; }
     }
 </style>
 
+@code {
+    private bool menuOpen = false;
+}
