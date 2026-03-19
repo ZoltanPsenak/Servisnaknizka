@@ -41,6 +41,11 @@ namespace Servisnaknizka.Models
 
         public bool IsActive { get; set; } = true;
 
+        // Prenosový kód na prevod vozidla na nového majiteľa
+        [MaxLength(8)]
+        public string? TransferCode { get; set; }
+        public DateTime? TransferCodeExpiry { get; set; }
+
         // Cudz� k��� na majite�a
         public int OwnerId { get; set; }
 

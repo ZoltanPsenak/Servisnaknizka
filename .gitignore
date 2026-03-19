@@ -53,3 +53,8 @@ CodeCoverage/
 TestResult.xml
 nunit-*.xml
 .fake
+
+# Sensitive configuration
+appsettings.Development.json
+appsettings.*.json
+!appsettings.json

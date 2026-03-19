@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,7 @@ namespace Servisnaknizka.Controllers;
 
 [Route("api/export")]
 [ApiController]
+[Authorize]
 public class ExportController : ControllerBase
 {
     private readonly ApplicationDbContext _context;

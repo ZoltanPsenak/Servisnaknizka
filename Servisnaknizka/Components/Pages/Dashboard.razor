@@ -67,12 +67,50 @@ else
                         <p>Prehľad vašich vozidiel a servisnej histórie</p>
                     </div>
                     <div class="cd-hero-right">
+                        <button @onclick="() => showClaimVehicleForm = !showClaimVehicleForm" class="cd-btn cd-btn-ghost" style="color:white;border-color:rgba(255,255,255,0.3);">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+                            Prevziať vozidlo
+                        </button>
                         <button @onclick="ShowAddVehicleModal" class="cd-btn cd-btn-accent">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                             Pridať vozidlo
                         </button>
                     </div>
                 </div>
+
+                <!-- PREVZIAŤ VOZIDLO KÓDOM -->
+                @if (showClaimVehicleForm)
+                {
+                    <div class="cd-section-card">
+                        <div class="cd-section-head">
+                            <h2>Prevziať vozidlo prenosovým kódom</h2>
+                        </div>
+                        <div class="cd-form-card">
+                            <p style="color:var(--cd-gray);margin-bottom:16px;">Zadajte 8-miestny prenosový kód, ktorý ste dostali od aktuálneho majiteľa vozidla. Vozidlo aj s oprávneniami bude prenesené na váš účet.</p>
+                            <div class="cd-form">
+                                <div class="cd-form-row">
+                                    <div class="cd-field">
+                                        <label>Prenosový kód</label>
+                                        <input type="text" @bind="claimTransferCode" class="cd-input" maxlength="8" placeholder="napr. A1B2C3D4" style="text-transform:uppercase;letter-spacing:3px;font-weight:700;font-size:18px;text-align:center;" />
+                                    </div>
+                                </div>
+                                @if (!string.IsNullOrEmpty(claimMessage))
+                                {
+                                    <div class="cd-alert @(claimSuccess ? "cd-alert-ok" : "cd-alert-err")">
+                                        @claimMessage
+                                    </div>
+                                }
+                                <div class="cd-form-actions">
+                                    <button type="button" @onclick="() => { showClaimVehicleForm = false; claimMessage = string.Empty; }" class="cd-btn cd-btn-ghost">Zrušiť</button>
+                                    <button type="button" @onclick="ClaimVehicleByCode" class="cd-btn cd-btn-primary" disabled="@isLoading">
+                                        @if (isLoading) { <span class="cd-spinner-sm"></span> <span>Overujem...</span> }
+                                        else { <span>Prevziať vozidlo</span> }
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
 
                 <!-- STAT CARDS -->
                 <div class="cd-stats">
@@ -156,10 +194,22 @@ else
                                     <p class="cd-vc-vin">VIN: @vehicle.VIN</p>
                                     <div class="cd-vc-footer">
                                         <span>@vehicle.ServiceRecords.Count záznamov</span>
-                                        <button @onclick:stopPropagation @onclick="() => StartEditVehicle(vehicle)" class="cd-btn-icon" title="Upraviť">
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                                        </button>
+                                        <div style="display:flex;gap:4px;">
+                                            <button @onclick:stopPropagation @onclick="() => GenerateTransferCode(vehicle)" class="cd-btn-icon" title="Vygenerovať prenosový kód">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+                                            </button>
+                                            <button @onclick:stopPropagation @onclick="() => StartEditVehicle(vehicle)" class="cd-btn-icon" title="Upraviť">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                            </button>
+                                        </div>
                                     </div>
+                                    @if (!string.IsNullOrEmpty(vehicle.TransferCode) && vehicle.TransferCodeExpiry > DateTime.UtcNow)
+                                    {
+                                        <div class="cd-transfer-code-box" @onclick:stopPropagation>
+                                            <span style="font-size:11px;color:var(--cd-gray);">Prenosový kód (platný do @vehicle.TransferCodeExpiry.Value.ToLocalTime().ToString("dd.MM. HH:mm")):</span>
+                                            <span class="cd-transfer-code">@vehicle.TransferCode</span>
+                                        </div>
+                                    }
                                 </div>
                             }
                         </div>
@@ -1640,6 +1690,26 @@ else
         font-weight: 500;
     }
 
+    .cd-transfer-code-box {
+        margin-top: 10px;
+        padding: 10px 14px;
+        background: #fffbeb;
+        border: 1.5px dashed #f59e0b;
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        align-items: center;
+    }
+
+    .cd-transfer-code {
+        font-size: 20px;
+        font-weight: 900;
+        letter-spacing: 4px;
+        color: #b45309;
+        font-family: 'Courier New', monospace;
+    }
+
     /* VEHICLE LIST (compact for service) */
     .cd-vehicle-list {
         display: flex;
@@ -2400,6 +2470,12 @@ else
     private string svcFormMessage = string.Empty;
     private bool svcFormSuccess = false;
 
+    // Vehicle transfer (claim by code)
+    private bool showClaimVehicleForm = false;
+    private string claimTransferCode = string.Empty;
+    private string claimMessage = string.Empty;
+    private bool claimSuccess = false;
+
     protected override async Task OnInitializedAsync()
     {
         await CheckAuthenticationAndLoadData();
@@ -2816,6 +2892,13 @@ else
     {
         adminUserMessage = string.Empty;
 
+        if (userRole != "admin")
+        {
+            adminUserMessage = "Nemáte oprávnenie na túto akciu.";
+            adminUserSuccess = false;
+            return;
+        }
+
         if (string.IsNullOrWhiteSpace(adminNewFirstName) || string.IsNullOrWhiteSpace(adminNewLastName) ||
             string.IsNullOrWhiteSpace(adminNewEmail) || string.IsNullOrWhiteSpace(adminNewPassword))
         {
@@ -2904,6 +2987,13 @@ else
     {
         editUserMessage = string.Empty;
 
+        if (userRole != "admin")
+        {
+            editUserMessage = "Nemáte oprávnenie na túto akciu.";
+            editUserSuccess = false;
+            return;
+        }
+
         if (string.IsNullOrWhiteSpace(editUserFirstName) || string.IsNullOrWhiteSpace(editUserLastName) ||
             string.IsNullOrWhiteSpace(editUserEmail))
         {
@@ -2989,6 +3079,8 @@ else
 
     private async Task AdminToggleUserActive(int userId, bool active)
     {
+        if (userRole != "admin") return;
+
         try
         {
             var user = await DbContext.Users.FindAsync(userId);
@@ -3011,6 +3103,14 @@ else
     private async Task AdminGrantPermission()
     {
         adminPermMessage = string.Empty;
+
+        if (userRole != "admin")
+        {
+            adminPermMessage = "Nemáte oprávnenie na túto akciu.";
+            adminPermSuccess = false;
+            StateHasChanged();
+            return;
+        }
 
         if (adminPermVehicleId == 0 || string.IsNullOrWhiteSpace(adminPermServiceEmail))
         {
@@ -3069,6 +3169,8 @@ else
 
     private async Task AdminRevokePermission(int permissionId)
     {
+        if (userRole != "admin") return;
+
         try
         {
             var perm = await DbContext.Permissions.FindAsync(permissionId);
@@ -3154,11 +3256,123 @@ else
         }
     }
 
+    // ========== VEHICLE TRANSFER ==========
+
+    private async Task GenerateTransferCode(Vehicle vehicle)
+    {
+        try
+        {
+            var dbVehicle = await DbContext.Vehicles.FindAsync(vehicle.Id);
+            if (dbVehicle == null || dbVehicle.OwnerId != currentUserId) return;
+
+            // Generate random 8-char alphanumeric code
+            var chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+            var code = new char[8];
+            using var rng = System.Security.Cryptography.RandomNumberGenerator.Create();
+            var bytes = new byte[8];
+            rng.GetBytes(bytes);
+            for (int i = 0; i < 8; i++)
+                code[i] = chars[bytes[i] % chars.Length];
+
+            dbVehicle.TransferCode = new string(code);
+            dbVehicle.TransferCodeExpiry = DateTime.UtcNow.AddHours(24);
+            await DbContext.SaveChangesAsync();
+
+            await LoadDataFromDatabase();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error generating transfer code: {ex.Message}");
+        }
+        StateHasChanged();
+    }
+
+    private async Task ClaimVehicleByCode()
+    {
+        claimMessage = string.Empty;
+        var code = claimTransferCode?.Trim().ToUpperInvariant();
+
+        if (string.IsNullOrWhiteSpace(code) || code.Length != 8)
+        {
+            claimMessage = "Zadajte platný 8-miestny prenosový kód.";
+            claimSuccess = false;
+            StateHasChanged();
+            return;
+        }
+
+        isLoading = true;
+        StateHasChanged();
+
+        try
+        {
+            var vehicle = await DbContext.Vehicles
+                .Include(v => v.ServicePermissions)
+                .FirstOrDefaultAsync(v => v.TransferCode == code && v.IsActive);
+
+            if (vehicle == null)
+            {
+                claimMessage = "Vozidlo s týmto kódom nebolo nájdené.";
+                claimSuccess = false;
+                isLoading = false;
+                StateHasChanged();
+                return;
+            }
+
+            if (vehicle.TransferCodeExpiry == null || vehicle.TransferCodeExpiry < DateTime.UtcNow)
+            {
+                claimMessage = "Platnosť prenosového kódu vypršala. Požiadajte majiteľa o nový kód.";
+                claimSuccess = false;
+                isLoading = false;
+                StateHasChanged();
+                return;
+            }
+
+            if (vehicle.OwnerId == currentUserId)
+            {
+                claimMessage = "Toto vozidlo už vlastníte.";
+                claimSuccess = false;
+                isLoading = false;
+                StateHasChanged();
+                return;
+            }
+
+            // Transfer the vehicle to the new owner
+            vehicle.OwnerId = currentUserId;
+            vehicle.TransferCode = null;
+            vehicle.TransferCodeExpiry = null;
+
+            // Deactivate existing permissions (new owner will grant new ones)
+            foreach (var perm in vehicle.ServicePermissions)
+            {
+                perm.IsActive = false;
+            }
+
+            await DbContext.SaveChangesAsync();
+
+            claimMessage = $"Vozidlo {vehicle.Brand} {vehicle.Model} ({vehicle.LicensePlate}) bolo úspešne prenesené na váš účet!";
+            claimSuccess = true;
+            claimTransferCode = string.Empty;
+            showClaimVehicleForm = false;
+
+            await LoadDataFromDatabase();
+        }
+        catch (Exception ex)
+        {
+            claimMessage = $"Chyba: {ex.Message}";
+            claimSuccess = false;
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
     // ========== NAVIGATION ==========
 
-    private void Logout()
+    private async Task Logout()
     {
-        Navigation.NavigateTo("/api/auth/logout", forceLoad: true);
+        await JSRuntime.InvokeVoidAsync("eval", "fetch('/api/auth/logout', {method:'POST'}).then(() => window.location.href = '/')");
     }
 
     // ========== HELPER METHODS ==========

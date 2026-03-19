@@ -93,6 +93,15 @@ namespace Servisnaknizka.Data
                 entity.HasIndex(v => v.VIN).IsUnique();
                 entity.HasIndex(v => v.LicensePlate);
                 entity.HasIndex(v => new { v.OwnerId, v.IsActive });
+
+                entity.Property(v => v.TransferCode)
+                    .HasMaxLength(8)
+                    .HasColumnType("varchar(8)");
+
+                entity.Property(v => v.TransferCodeExpiry)
+                    .HasColumnType("datetime2");
+
+                entity.HasIndex(v => v.TransferCode);
             });
 
             // SQL Server �pecifick� nastavenia pre ServiceRecord

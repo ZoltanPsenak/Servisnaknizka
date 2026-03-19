@@ -46,7 +46,11 @@ public class AuthController : ControllerBase
 
         if (result.Succeeded)
         {
-            var returnUrl = string.IsNullOrEmpty(request.ReturnUrl) ? "/dashboard" : request.ReturnUrl;
+            var returnUrl = "/dashboard";
+            if (!string.IsNullOrEmpty(request.ReturnUrl) && Url.IsLocalUrl(request.ReturnUrl))
+            {
+                returnUrl = request.ReturnUrl;
+            }
             return Redirect(returnUrl);
         }
         
@@ -115,7 +119,6 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("logout")]
-    [HttpGet("logout")]
     public async Task<IActionResult> Logout()
     {
         await _signInManager.SignOutAsync();
