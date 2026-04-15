@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Servisnaknizka.Models;
+using Servisnaknizka.Services;
 using System.Security.Claims;
 
 namespace Servisnaknizka.Controllers;
@@ -11,11 +12,13 @@ public class AuthController : ControllerBase
 {
     private readonly SignInManager<User> _signInManager;
     private readonly UserManager<User> _userManager;
+    private readonly IEmailService _emailService;
 
-    public AuthController(SignInManager<User> signInManager, UserManager<User> userManager)
+    public AuthController(SignInManager<User> signInManager, UserManager<User> userManager, IEmailService emailService)
     {
         _signInManager = signInManager;
         _userManager = userManager;
+        _emailService = emailService;
     }
 
     [HttpPost("login")]
@@ -174,6 +177,88 @@ public class AuthController : ControllerBase
 
         return Redirect("/login-2fa?error=invalid_code");
     }
+
+    [HttpPost("forgot-password")]
+    public async Task<IActionResult> ForgotPassword([FromForm] ForgotPasswordRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.Email))
+        {
+            return Redirect("/forgot-password?error=invalid");
+        }
+
+        var user = await _userManager.FindByEmailAsync(request.Email);
+        if (user != null && user.IsActive)
+        {
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var encodedToken = Uri.EscapeDataString(token);
+            var encodedEmail = Uri.EscapeDataString(request.Email);
+
+            var resetUrl = $"{Request.Scheme}://{Request.Host}/reset-password?email={encodedEmail}&token={encodedToken}";
+
+            var htmlBody = $@"
+                <div style='font-family:Arial,sans-serif;max-width:500px;margin:0 auto;padding:20px'>
+                    <h2 style='color:#2563eb'>Servisná Knižka</h2>
+                    <p>Dobrý deň,</p>
+                    <p>Prijali sme žiadosť o obnovenie hesla pre váš účet.</p>
+                    <p style='margin:24px 0'>
+                        <a href='{resetUrl}' style='background:#2563eb;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold'>
+                            Obnoviť heslo
+                        </a>
+                    </p>
+                    <p style='font-size:13px;color:#64748b'>Ak ste o obnovenie hesla nežiadali, tento e-mail ignorujte. Odkaz je platný 24 hodín.</p>
+                </div>";
+
+            try
+            {
+                await _emailService.SendEmailAsync(request.Email, "Obnovenie hesla – Servisná Knižka", htmlBody);
+            }
+            catch
+            {
+                // Log error but don't reveal whether user exists
+            }
+        }
+
+        // Always show success to prevent email enumeration
+        return Redirect("/forgot-password?success=sent");
+    }
+
+    [HttpPost("reset-password")]
+    public async Task<IActionResult> ResetPassword([FromForm] ResetPasswordRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Token))
+        {
+            return Redirect("/reset-password?error=invalid_token");
+        }
+
+        if (request.Password != request.ConfirmPassword)
+        {
+            var encodedToken = Uri.EscapeDataString(request.Token);
+            var encodedEmail = Uri.EscapeDataString(request.Email);
+            return Redirect($"/reset-password?email={encodedEmail}&token={encodedToken}&error=passwords");
+        }
+
+        var user = await _userManager.FindByEmailAsync(request.Email);
+        if (user == null)
+        {
+            return Redirect("/reset-password?error=invalid_token");
+        }
+
+        var result = await _userManager.ResetPasswordAsync(user, request.Token, request.Password);
+        if (result.Succeeded)
+        {
+            return Redirect("/reset-password?success=reset");
+        }
+
+        var encodedToken2 = Uri.EscapeDataString(request.Token);
+        var encodedEmail2 = Uri.EscapeDataString(request.Email);
+
+        if (result.Errors.Any(e => e.Code == "InvalidToken"))
+        {
+            return Redirect($"/reset-password?email={encodedEmail2}&token={encodedToken2}&error=invalid_token");
+        }
+
+        return Redirect($"/reset-password?email={encodedEmail2}&token={encodedToken2}&error=password_weak");
+    }
 }
 
 public class LoginRequest
@@ -199,4 +284,17 @@ public class TwoFactorRequest
     public string Code { get; set; } = string.Empty;
     public bool RememberMe { get; set; } = false;
     public string? ReturnUrl { get; set; }
+}
+
+public class ForgotPasswordRequest
+{
+    public string Email { get; set; } = string.Empty;
+}
+
+public class ResetPasswordRequest
+{
+    public string Email { get; set; } = string.Empty;
+    public string Token { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
+    public string ConfirmPassword { get; set; } = string.Empty;
 }

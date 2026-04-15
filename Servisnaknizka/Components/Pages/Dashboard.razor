@@ -44,6 +44,12 @@ else
                         <span class="cd-user-role">@GetRoleDisplayName()</span>
                     </div>
                 </div>
+                <button @onclick="() => showProfileSettings = !showProfileSettings" class="cd-btn-logout" title="Profil a nastavenia">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                    </svg>
+                    <span>Profil</span>
+                </button>
                 <button @onclick="() => show2faSettings = !show2faSettings" class="cd-btn-logout" title="Nastavenia 2FA">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
@@ -229,6 +235,85 @@ else
                         <button @onclick="() => showReminderModal = false" class="cd-btn cd-btn-ghost">Zrušiť</button>
                         <button @onclick="SaveReminderSettings" class="cd-btn cd-btn-primary" disabled="@isLoading">Uložiť všetko</button>
                     </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- PROFILE SETTINGS MODAL -->
+    @if (showProfileSettings)
+    {
+        <div class="cd-modal-overlay" @onclick="() => showProfileSettings = false">
+            <div class="cd-modal-2fa" @onclick:stopPropagation="true" style="max-width:520px;">
+                <div class="cd-modal-header">
+                    <h2>Profil a nastavenia</h2>
+                    <button @onclick="() => showProfileSettings = false" class="cd-modal-close">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                </div>
+                <div class="cd-modal-body">
+                    <!-- Profile avatar -->
+                    <div style="text-align:center;margin-bottom:20px;">
+                        <div class="cd-profile-avatar">@GetUserInitials()</div>
+                        <p style="font-size:13px;color:#64748b;margin-top:8px;">@userEmail</p>
+                    </div>
+
+                    <!-- Edit profile form -->
+                    <h3 style="font-size:15px;font-weight:700;color:#0f172a;margin-bottom:12px;">Osobné údaje</h3>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+                        <div class="cd-field">
+                            <label>Meno</label>
+                            <input type="text" @bind="profileFirstName" class="cd-input" maxlength="50" />
+                        </div>
+                        <div class="cd-field">
+                            <label>Priezvisko</label>
+                            <input type="text" @bind="profileLastName" class="cd-input" maxlength="50" />
+                        </div>
+                    </div>
+                    <div class="cd-field" style="margin-bottom:16px;">
+                        <label>E-mail</label>
+                        <input type="email" @bind="profileEmail" class="cd-input" maxlength="100" />
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(profileMessage))
+                    {
+                        <div class="cd-alert @(profileSuccess ? "cd-alert-ok" : "cd-alert-err")" style="margin-bottom:12px;">
+                            @profileMessage
+                        </div>
+                    }
+
+                    <button @onclick="SaveProfile" class="cd-btn cd-btn-primary" style="width:100%;margin-bottom:24px;" disabled="@isLoading">
+                        Uložiť profil
+                    </button>
+
+                    <!-- Change password form -->
+                    <hr style="border:none;border-top:1px solid #e2e8f0;margin:20px 0;" />
+                    <h3 style="font-size:15px;font-weight:700;color:#0f172a;margin-bottom:12px;">Zmena hesla</h3>
+                    <div class="cd-field" style="margin-bottom:12px;">
+                        <label>Aktuálne heslo</label>
+                        <input type="password" @bind="currentPassword" class="cd-input" />
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+                        <div class="cd-field">
+                            <label>Nové heslo</label>
+                            <input type="password" @bind="newPassword" class="cd-input" />
+                        </div>
+                        <div class="cd-field">
+                            <label>Potvrdiť heslo</label>
+                            <input type="password" @bind="confirmNewPassword" class="cd-input" />
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(passwordMessage))
+                    {
+                        <div class="cd-alert @(passwordSuccess ? "cd-alert-ok" : "cd-alert-err")" style="margin-bottom:12px;">
+                            @passwordMessage
+                        </div>
+                    }
+
+                    <button @onclick="ChangePassword" class="cd-btn cd-btn-primary" style="width:100%;" disabled="@isLoading">
+                        Zmeniť heslo
+                    </button>
                 </div>
             </div>
         </div>
@@ -1690,6 +1775,19 @@ else
         font-size: 14px;
     }
 
+    .cd-profile-avatar {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--cd-primary), #0ea5e9);
+        color: white;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 28px;
+    }
+
     .cd-user-text {
         display: flex;
         flex-direction: column;
@@ -3074,6 +3172,21 @@ else
     private string twoFaMessage = string.Empty;
     private bool twoFaSuccess = false;
 
+    // Profile Settings
+    private bool showProfileSettings = false;
+    private string profileFirstName = string.Empty;
+    private string profileLastName = string.Empty;
+    private string profileEmail = string.Empty;
+    private string profileMessage = string.Empty;
+    private bool profileSuccess = false;
+
+    // Change Password
+    private string currentPassword = string.Empty;
+    private string newPassword = string.Empty;
+    private string confirmNewPassword = string.Empty;
+    private string passwordMessage = string.Empty;
+    private bool passwordSuccess = false;
+
     protected override async Task OnInitializedAsync()
     {
         await CheckAuthenticationAndLoadData();
@@ -3106,6 +3219,11 @@ else
             userRole = currentUser.Role.ToString().ToLower();
             isAuthenticated = true;
             is2faEnabled = await UserManager.GetTwoFactorEnabledAsync(currentUser);
+
+            // Initialize profile form
+            profileFirstName = currentUser.FirstName;
+            profileLastName = currentUser.LastName;
+            profileEmail = currentUser.Email ?? "";
 
             await LoadDataFromDatabase();
             await LoadNotifications();
@@ -4338,6 +4456,154 @@ else
             if (count % 4 == 0 && count < key.Length) result.Append(' ');
         }
         return result.ToString();
+    }
+
+    // ========== PROFILE & PASSWORD ==========
+
+    private async Task SaveProfile()
+    {
+        profileMessage = string.Empty;
+
+        if (string.IsNullOrWhiteSpace(profileFirstName) || string.IsNullOrWhiteSpace(profileLastName))
+        {
+            profileMessage = "Meno a priezvisko sú povinné.";
+            profileSuccess = false;
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(profileEmail))
+        {
+            profileMessage = "E-mail je povinný.";
+            profileSuccess = false;
+            return;
+        }
+
+        isLoading = true;
+        StateHasChanged();
+
+        try
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var currentUser = await UserManager.GetUserAsync(authState.User);
+            if (currentUser == null) return;
+
+            currentUser.FirstName = profileFirstName;
+            currentUser.LastName = profileLastName;
+
+            if (currentUser.Email != profileEmail)
+            {
+                var existingUser = await UserManager.FindByEmailAsync(profileEmail);
+                if (existingUser != null && existingUser.Id != currentUser.Id)
+                {
+                    profileMessage = "Tento e-mail je už používaný iným účtom.";
+                    profileSuccess = false;
+                    isLoading = false;
+                    StateHasChanged();
+                    return;
+                }
+
+                currentUser.Email = profileEmail;
+                currentUser.NormalizedEmail = profileEmail.ToUpper();
+                currentUser.UserName = profileEmail;
+                currentUser.NormalizedUserName = profileEmail.ToUpper();
+            }
+
+            await DbContext.SaveChangesAsync();
+
+            currentFirstName = profileFirstName;
+            currentLastName = profileLastName;
+            userEmail = profileEmail;
+
+            profileMessage = "Profil bol úspešne aktualizovaný!";
+            profileSuccess = true;
+        }
+        catch (Exception ex)
+        {
+            profileMessage = $"Chyba: {ex.Message}";
+            profileSuccess = false;
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task ChangePassword()
+    {
+        passwordMessage = string.Empty;
+
+        if (string.IsNullOrWhiteSpace(currentPassword))
+        {
+            passwordMessage = "Zadajte aktuálne heslo.";
+            passwordSuccess = false;
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(newPassword))
+        {
+            passwordMessage = "Zadajte nové heslo.";
+            passwordSuccess = false;
+            return;
+        }
+
+        if (newPassword != confirmNewPassword)
+        {
+            passwordMessage = "Nové heslá sa nezhodujú.";
+            passwordSuccess = false;
+            return;
+        }
+
+        if (newPassword.Length < 6)
+        {
+            passwordMessage = "Heslo musí mať minimálne 6 znakov.";
+            passwordSuccess = false;
+            return;
+        }
+
+        isLoading = true;
+        StateHasChanged();
+
+        try
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var currentUser = await UserManager.GetUserAsync(authState.User);
+            if (currentUser == null) return;
+
+            var result = await UserManager.ChangePasswordAsync(currentUser, currentPassword, newPassword);
+            if (result.Succeeded)
+            {
+                passwordMessage = "Heslo bolo úspešne zmenené!";
+                passwordSuccess = true;
+                currentPassword = string.Empty;
+                newPassword = string.Empty;
+                confirmNewPassword = string.Empty;
+            }
+            else
+            {
+                var errors = result.Errors.Select(e => e.Code switch
+                {
+                    "PasswordMismatch" => "Aktuálne heslo je nesprávne.",
+                    "PasswordTooShort" => "Nové heslo je príliš krátke (min. 6 znakov).",
+                    "PasswordRequiresDigit" => "Heslo musí obsahovať číslo.",
+                    "PasswordRequiresUpper" => "Heslo musí obsahovať veľké písmeno.",
+                    "PasswordRequiresLower" => "Heslo musí obsahovať malé písmeno.",
+                    _ => e.Description
+                });
+                passwordMessage = string.Join(" ", errors);
+                passwordSuccess = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            passwordMessage = $"Chyba: {ex.Message}";
+            passwordSuccess = false;
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
     }
 
     // ========== NAVIGATION ==========

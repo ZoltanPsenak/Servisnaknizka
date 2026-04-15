@@ -60,5 +60,7 @@ nunit-*.xml
 # Sensitive configuration
 appsettings.Development.json
 appsettings.*.json
-!appsettings.json
+appsettings.json
 Metodika.md
+Servisnaknizka/appsettings.Development.json
+Servisnaknizka/appsettings.json

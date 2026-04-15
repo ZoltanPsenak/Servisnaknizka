@@ -68,6 +68,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 // Registrácia služieb
 builder.Services.AddScoped<IVehicleService, VehicleService>();
+builder.Services.AddSingleton<IEmailService, EmailService>();
 
 // Pozadie: automatické pripomienky servisov
 builder.Services.AddHostedService<ReminderService>();
